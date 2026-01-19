@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge 1: Sequence Quality Detective | GBBA BioHack 2026</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🧬 GBBA BioHack 2026</h1>
+                    <p>Innovate. Analyze. Transform.</p>
+                </div>
+                <div class="event-details">
+                    <h3>January 22-23, 2026</h3>
+                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="challenge-header">
+        <div class="container">
+            <span class="difficulty beginner">🟢 Beginner</span>
+            <h1>🔍 Challenge 1: Sequence Quality Detective</h1>
+            <div class="challenge-meta">
+                <div class="meta-item">
+                    <span>⏱️ Estimated Time: 3-4 hours</span>
+                </div>
+                <div class="meta-item">
+                    <span>👥 Team Size: 1-3 people</span>
+                </div>
+                <div class="meta-item">
+                    <span>🏆 Points: 100</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="challenge-content">
+        <div class="container">
+            <a href="../index.html#challenges" class="back-link">← Back to Challenges</a>
+
+            <div class="content-section">
+                <h2>🎯 Challenge Overview</h2>
+                <p>You've received sequencing data from a collaborator's failed experiment. The lab claims "the sequencing just didn't work," but you suspect there's more to the story. Your job is to investigate what went wrong and salvage what you can.</p>
+            </div>
+
+            <div class="info-box">
+                <h3>The Scenario</h3>
+                <p>A research lab sent you 3 FASTQ files from their RNA-seq experiment studying heat shock response in <em>E. coli</em>. The downstream analysis pipeline failed completely, and they need your expertise to:</p>
+                <ul>
+                    <li><strong>Identify what went wrong</strong> with the sequencing</li>
+                    <li><strong>Determine if any data can be salvaged</strong></li>
+                    <li><strong>Provide recommendations</strong> for future experiments</li>
+                </ul>
+                <p>The lab is counting on you to figure out why their $5,000 sequencing run failed and whether they need to repeat the entire experiment.</p>
+            </div>
+
+            <div class="content-section">
+                <h2>📥 Data Access</h2>
+                <p><strong>Note:</strong> Data files will be released on <strong>January 21, 2026 at 8:00 PM EST</strong></p>
+                
+                <h3>Download Instructions</h3>
+                <pre><code># Sample 1: Control replicate 1
+wget [URL_TO_BE_PROVIDED]/control_rep1_R1.fastq.gz
+wget [URL_TO_BE_PROVIDED]/control_rep1_R2.fastq.gz
+
+# Sample 2: Heat shock replicate 1
+wget [URL_TO_BE_PROVIDED]/heatshock_rep1_R1.fastq.gz
+wget [URL_TO_BE_PROVIDED]/heatshock_rep1_R2.fastq.gz
+
+# Sample 3: Heat shock replicate 2
+wget [URL_TO_BE_PROVIDED]/heatshock_rep2_R1.fastq.gz
+wget [URL_TO_BE_PROVIDED]/heatshock_rep2_R2.fastq.gz</code></pre>
+
+                <h3>File Information</h3>
+                <ul>
+                    <li><strong>Format:</strong> Paired-end FASTQ (gzipped)</li>
+                    <li><strong>Read Length:</strong> 150 bp</li>
+                    <li><strong>Sequencing Platform:</strong> Illumina NovaSeq</li>
+                    <li><strong>Total Files:</strong> 6 files (3 samples × 2 reads)</li>
+                    <li><strong>Expected Organism:</strong> <em>E. coli</em> K-12</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📋 Required Deliverables</h2>
+                
+                <h3>1. Comprehensive QC Report (30 points)</h3>
+                <p>Create a detailed quality control analysis including:</p>
+                <ul>
+                    <li>Per-base quality scores</li>
+                    <li>Adapter contamination levels</li>
+                    <li>Sequence duplication levels</li>
+                    <li>GC content distribution</li>
+                    <li>Overrepresented sequences</li>
+                    <li>Multi-sample comparison</li>
+                </ul>
+                <p><strong>Format:</strong> HTML report using MultiQC or equivalent</p>
+
+                <h3>2. Problem Diagnosis Report (25 points)</h3>
+                <p>Write a clear report (1-2 pages) that answers:</p>
+                <ul>
+                    <li>What went wrong?</li>
+                    <li>Root cause analysis with evidence</li>
+                    <li>Which samples are most affected?</li>
+                    <li>Severity of each issue identified</li>
+                </ul>
+                <p><strong>Format:</strong> PDF or Markdown with embedded figures</p>
+
+                <h3>3. Cleaned Dataset (25 points)</h3>
+                <ul>
+                    <li>Trimmed/filtered FASTQ files for all samples</li>
+                    <li>Before/after QC comparison</li>
+                    <li>Cleaning metrics (reads retained, quality improvement)</li>
+                    <li>Clear documentation of filtering criteria</li>
+                </ul>
+
+                <h3>4. Recommendations (10 points)</h3>
+                <ul>
+                    <li>Should they proceed with this data?</li>
+                    <li>Should they resequence?</li>
+                    <li>Future prevention strategies</li>
+                    <li>Library preparation improvements</li>
+                </ul>
+
+                <h3>5. Code & Documentation (10 points)</h3>
+                <ul>
+                    <li>All analysis scripts (well-commented)</li>
+                    <li>README with step-by-step workflow</li>
+                    <li>Tool versions documented</li>
+                    <li>Reproducible instructions</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>🛠️ Recommended Tools</h2>
+                
+                <h3>Quality Control</h3>
+                <ul>
+                    <li><strong>FastQC</strong> - Per-sample quality metrics</li>
+                    <li><strong>MultiQC</strong> - Aggregate reports</li>
+                </ul>
+
+                <h3>Read Trimming/Cleaning</h3>
+                <ul>
+                    <li><strong>Trimmomatic</strong> - Java-based trimmer</li>
+                    <li><strong>Cutadapt</strong> - Python-based trimmer</li>
+                    <li><strong>fastp</strong> - All-in-one tool (recommended for beginners)</li>
+                </ul>
+
+                <h3>Contamination Detection (Optional)</h3>
+                <ul>
+                    <li><strong>BLAST</strong> - Identify unknown sequences</li>
+                    <li><strong>Kraken2</strong> - Taxonomic classification</li>
+                    <li><strong>FastQ Screen</strong> - Multi-genome contamination screening</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📊 Evaluation Criteria</h2>
+                <table>
+                    <tr>
+                        <th>Criteria</th>
+                        <th>Points</th>
+                        <th>What Judges Look For</th>
+                    </tr>
+                    <tr>
+                        <td>Correctness</td>
+                        <td>30</td>
+                        <td>Accurate identification of quality issues</td>
+                    </tr>
+                    <tr>
+                        <td>Visualization</td>
+                        <td>25</td>
+                        <td>Clear, informative plots and reports</td>
+                    </tr>
+                    <tr>
+                        <td>Problem-Solving</td>
+                        <td>20</td>
+                        <td>Creative, thorough analysis</td>
+                    </tr>
+                    <tr>
+                        <td>Documentation</td>
+                        <td>15</td>
+                        <td>Reproducible, well-organized</td>
+                    </tr>
+                    <tr>
+                        <td>Presentation</td>
+                        <td>10</td>
+                        <td>Clear communication of findings</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 Guiding Questions</h3>
+                <ul>
+                    <li>Are quality scores dropping at specific positions?</li>
+                    <li>Do you see unexpected sequence patterns?</li>
+                    <li>Is there evidence of adapter contamination?</li>
+                    <li>Are GC content distributions normal for <em>E. coli</em>?</li>
+                    <li>Any taxonomic contamination present?</li>
+                    <li>Are all samples equally affected?</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>🎨 Creativity Bonus Opportunities</h2>
+                <p>Go beyond the basic requirements to earn extra points:</p>
+                <ul>
+                    <li>🌟 Kmer analysis to identify unknown contaminants (+5 pts)</li>
+                    <li>🌟 Interactive HTML report with drill-down capabilities (+5 pts)</li>
+                    <li>🌟 Statistical comparison of before/after cleaning (+5 pts)</li>
+                    <li>🌟 Custom visualization dashboard (Shiny/Plotly) (+5 pts)</li>
+                    <li>🌟 Automated cleaning pipeline with parameter optimization (+5 pts)</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📝 Submission Requirements</h2>
+                
+                <h3>GitHub Repository Structure</h3>
+                <pre><code>challenge1-sequence-qc/
+├── README.md                    # Main documentation
+├── data/                        # Data download instructions
+├── scripts/                     # All analysis code
+│   ├── 01_run_fastqc.sh
+│   ├── 02_run_multiqc.sh
+│   ├── 03_trim_reads.sh
+│   └── 04_compare_qc.R
+├── results/                     # Output files
+│   ├── qc_reports/
+│   ├── cleaned_fastq/
+│   └── figures/
+├── report/                      # Final report
+│   └── problem_diagnosis.pdf
+└── presentation/                # 2-slide presentation
+    └── slides.pdf</code></pre>
+
+                <div class="warning-box">
+                    <h3>⚠️ Mandatory README Section</h3>
+                    <p>Your README must include:</p>
+                    <pre><code># 🧬 GBBA BioHack 2026 Submission
+
+**Team Name:** [Your Team Name]
+**Challenge:** Challenge 1 - Sequence Quality Detective
+**Institution:** [Your Institution]
+
+---
+
+### 📢 Event Information
+This project was developed for **GBBA BioHack 2026**, 
+organized by GBBA at Northeastern University.
+
+**Stay Connected:**
+- 📸 Instagram: [@gbba_northeastern](https://instagram.com/gbba_northeastern)
+- 💼 LinkedIn: [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)
+
+> ⚠️ Following GBBA on Instagram and LinkedIn is **mandatory for evaluation**.</code></pre>
+                </div>
+
+                <h3>Submission Checklist</h3>
+                <ul>
+                    <li>☐ GitHub repository is public</li>
+                    <li>☐ README includes mandatory GBBA social media section</li>
+                    <li>☐ All code is well-commented</li>
+                    <li>☐ Results are reproducible</li>
+                    <li>☐ 2-slide presentation is included</li>
+                    <li>☐ Following GBBA on Instagram</li>
+                    <li>☐ Following GBBA on LinkedIn</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>⏰ Important Deadlines</h2>
+                <ul>
+                    <li><strong>Challenge Released:</strong> January 21, 2026 @ 8:00 PM EST</li>
+                    <li><strong>Hacking Period:</strong> January 22-23, 2026</li>
+                    <li><strong>Final Submission:</strong> January 23, 2026 @ 12:00 PM EST</li>
+                    <li><strong>Presentations:</strong> January 23, 2026 @ 1:00 PM EST</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>🎤 Presentation Guidelines</h2>
+                
+                <h3>2-Slide Format</h3>
+                <p><strong>Slide 1: Problem & Approach</strong></p>
+                <ul>
+                    <li>What was wrong with the data?</li>
+                    <li>Your investigation methodology</li>
+                    <li>Key tools/techniques used</li>
+                </ul>
+
+                <p><strong>Slide 2: Results & Recommendations</strong></p>
+                <ul>
+                    <li>Major findings with visual evidence</li>
+                    <li>Data recovery statistics</li>
+                    <li>Actionable recommendations</li>
+                </ul>
+
+                <h3>Presentation Tips</h3>
+                <ul>
+                    <li>You'll have 5 minutes total</li>
+                    <li>Focus on your unique insights</li>
+                    <li>Prepare for 2-3 questions from judges</li>
+                    <li>Practice with your team beforehand</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <h3>💪 You've Got This!</h3>
+                <p>This challenge is designed to test your fundamental bioinformatics QC skills while encouraging creative problem-solving. Remember:</p>
+                <ul>
+                    <li><strong>There's no single "right" answer</strong> - we're evaluating your reasoning</li>
+                    <li><strong>Document your thought process</strong> - show us how you arrived at conclusions</li>
+                    <li><strong>Be creative</strong> - surprise us with your approach</li>
+                    <li><strong>Have fun</strong> - this is about learning and collaboration!</li>
+                </ul>
+                <p>Good luck, and may your reads be high quality! 🧬✨</p>
+            </div>
+
+            <div class="content-section">
+                <h2>🆘 Getting Help</h2>
+                <p><strong>Questions?</strong> Contact the organizers at <a href="mailto:gbba.biohack@northeastern.edu">gbba.biohack@northeastern.edu</a></p>
+                <p>Mentors will be available during the event for technical questions.</p>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0;">
+                <a href="../index.html#challenges" class="btn btn-primary">Back to All Challenges</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Graduate Biotechnology Business Association (GBBA) - Northeastern University</p>
+            <p style="margin-top: 0.5rem;">Organized with ❤️ by GBBA volunteers</p>
+        </div>
+    </footer>
+</body>
+</html>
