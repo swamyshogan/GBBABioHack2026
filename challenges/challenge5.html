@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge 5: Build Your Own Pipeline | GBBA BioHack 2026</title>
+    <title>Challenge 5: Build Your Pipeline | GBBA BioHack 2026</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
                 </div>
                 <div class="event-details">
                     <h3>January 22-23, 2026</h3>
-                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
+                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back</a></p>
                 </div>
             </div>
         </div>
@@ -25,11 +25,11 @@
     <section class="challenge-header">
         <div class="container">
             <span class="difficulty advanced">🔴 Advanced</span>
-            <h1>⚙️ Challenge 5: Build Your Own Pipeline</h1>
+            <h1>⚙️ Challenge 5: Build a Production Pipeline</h1>
             <div class="challenge-meta">
-                <div class="meta-item"><span>⏱️ Estimated Time: 7-8 hours</span></div>
-                <div class="meta-item"><span>👥 Team Size: 2-4 people</span></div>
-                <div class="meta-item"><span>🏆 Points: 100</span></div>
+                <div class="meta-item"><span>⏱️ 7-8 hours</span></div>
+                <div class="meta-item"><span>👥 2-4 people</span></div>
+                <div class="meta-item"><span>🏆 100 points</span></div>
             </div>
         </div>
     </section>
@@ -40,13 +40,376 @@
 
             <div class="content-section">
                 <h2>🎯 Challenge Overview</h2>
-                <p>Reproducibility crisis in bioinformatics is real. Build a production-ready, containerized Nextflow pipeline for RNA-seq analysis that any researcher could run on their data with a single command.</p>
+                <p>Build a <strong>production-ready, containerized Nextflow pipeline</strong> for RNA-seq analysis that anyone can run with a single command. Focus on reproducibility, modularity, and user-friendliness.</p>
             </div>
 
-            <!-- Add similar sections as Challenge 1 -->
+            <div class="info-box">
+                <h3>What You're Building</h3>
+                <p>A complete RNA-seq analysis pipeline that:</p>
+                <ul>
+                    <li>✅ Takes raw FASTQ files as input</li>
+                    <li>✅ Runs QC → Trim → Align → Quantify</li>
+                    <li>✅ Outputs: counts, QC report, BAM files</li>
+                    <li>✅ Is containerized (Docker/Singularity)</li>
+                    <li>✅ Follows best practices (nf-core style)</li>
+                    <li>✅ Can be run by a non-expert</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📥 Test Dataset</h2>
+                
+                <div class="success-box">
+                    <h3>Use Tiny Test Data</h3>
+                    <p>For testing your pipeline, use a small dataset:</p>
+                    <pre><code># Download test FASTQ files (subsampled to 10K reads)
+wget https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/test_R1.fastq.gz
+wget https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/test_R2.fastq.gz
+
+# Download small reference genome (E. coli or chr22 only)
+wget https://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.22.fa.gz
+
+# Download GTF annotation
+wget https://ftp.ensembl.org/pub/release-110/gtf/homo_sapiens/Homo_sapiens.GRCh38.110.gtf.gz</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>Or Use nf-core Test Data</h3>
+                    <pre><code># nf-core provides built-in test datasets
+nextflow run your-pipeline -profile test</code></pre>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>📋 Pipeline Requirements</h2>
+                
+                <h3>1. Pipeline Structure (25 points)</h3>
+                
+                <h4>A. Minimum Steps Required</h4>
+                <pre><code>Workflow:
+├── FastQC (raw data)
+├── Trim Galore or fastp
+├── FastQC (trimmed data)
+├── STAR alignment
+├── featureCounts quantification
+└── MultiQC report</code></pre>
+
+                <h4>B. Nextflow DSL2 Modules</h4>
+                <pre><code>// modules/fastqc.nf
+process FASTQC {
+    container 'biocontainers/fastqc:v0.11.9_cv8'
+    
+    input:
+    tuple val(sample_id), path(reads)
+    
+    output:
+    path("${sample_id}_fastqc.html"), emit: html
+    path("${sample_id}_fastqc.zip"), emit: zip
+    
+    script:
+    """
+    fastqc ${reads} --outdir .
+    """
+}
+
+// modules/trim.nf
+process TRIM {
+    container 'quay.io/biocontainers/trim-galore:0.6.7--hdfd78af_0'
+    
+    input:
+    tuple val(sample_id), path(reads)
+    
+    output:
+    tuple val(sample_id), path("*_trimmed.fq.gz"), emit: reads
+    
+    script:
+    """
+    trim_galore --paired ${reads[0]} ${reads[1]}
+    """
+}</code></pre>
+
+                <h4>C. Main Workflow</h4>
+                <pre><code>// main.nf
+#!/usr/bin/env nextflow
+
+nextflow.enable.dsl=2
+
+// Import modules
+include { FASTQC as FASTQC_RAW } from './modules/fastqc'
+include { FASTQC as FASTQC_TRIMMED } from './modules/fastqc'
+include { TRIM } from './modules/trim'
+include { ALIGN } from './modules/align'
+include { QUANTIFY } from './modules/quantify'
+include { MULTIQC } from './modules/multiqc'
+
+// Main workflow
+workflow {
+    // Input channel
+    reads_ch = Channel
+        .fromFilePairs(params.reads)
+    
+    // QC on raw reads
+    FASTQC_RAW(reads_ch)
+    
+    // Trim adapters
+    TRIM(reads_ch)
+    
+    // QC on trimmed
+    FASTQC_TRIMMED(TRIM.out.reads)
+    
+    // Align to genome
+    ALIGN(TRIM.out.reads, params.genome, params.gtf)
+    
+    // Quantify expression
+    QUANTIFY(ALIGN.out.bam, params.gtf)
+    
+    // Aggregate QC
+    qc_files = FASTQC_RAW.out.mix(FASTQC_TRIMMED.out)
+    MULTIQC(qc_files.collect())
+}</code></pre>
+
+                <h3>2. Configuration (20 points)</h3>
+                
+                <h4>nextflow.config</h4>
+                <pre><code>// nextflow.config
+params {
+    // Input parameters
+    reads = "data/*_R{1,2}.fastq.gz"
+    genome = "reference/genome.fa"
+    gtf = "reference/genes.gtf"
+    outdir = "results"
+    
+    // Tool-specific params
+    max_cpus = 8
+    max_memory = '16.GB'
+}
+
+profiles {
+    docker {
+        docker.enabled = true
+        docker.runOptions = '-u $(id -u):$(id -g)'
+    }
+    
+    singularity {
+        singularity.enabled = true
+        singularity.autoMounts = true
+    }
+    
+    test {
+        params.reads = "$projectDir/test_data/*_R{1,2}.fastq.gz"
+        params.genome = "$projectDir/test_data/genome.fa"
+        params.gtf = "$projectDir/test_data/genes.gtf"
+    }
+}
+
+process {
+    cpus = 4
+    memory = '8.GB'
+    
+    withName: ALIGN {
+        cpus = 8
+        memory = '16.GB'
+    }
+}</code></pre>
+
+                <h3>3. Containerization (20 points)</h3>
+                
+                <h4>Option 1: Use Existing Containers</h4>
+                <pre><code>// In each process, specify container
+process FASTQC {
+    container 'biocontainers/fastqc:v0.11.9_cv8'
+    // ...
+}
+
+process TRIM {
+    container 'quay.io/biocontainers/trim-galore:0.6.7'
+    // ...
+}</code></pre>
+
+                <h4>Option 2: Create Custom Dockerfile</h4>
+                <pre><code># Dockerfile
+FROM continuumio/miniconda3:latest
+
+RUN conda install -c bioconda \
+    fastqc=0.11.9 \
+    trim-galore=0.6.7 \
+    star=2.7.10a \
+    subread=2.0.3 \
+    multiqc=1.12
+
+WORKDIR /workspace</code></pre>
+
+                <h3>4. Documentation (20 points)</h3>
+                
+                <h4>README.md Requirements</h4>
+                <pre><code># RNA-seq Analysis Pipeline
+
+## Quick Start
+```bash
+# Clone repository
+git clone https://github.com/yourname/rnaseq-pipeline
+
+# Run with Docker
+nextflow run main.nf -profile docker
+
+# Run with your data
+nextflow run main.nf \
+    --reads "data/*_R{1,2}.fastq.gz" \
+    --genome reference/genome.fa \
+    --gtf reference/genes.gtf
+```
+
+## Installation
+[Detailed installation steps]
+
+## Usage
+[Parameter descriptions]
+
+## Output Files
+[Description of all outputs]
+
+## Troubleshooting
+[Common issues and solutions]
+</code></pre>
+
+                <h3>5. Testing & Validation (15 points)</h3>
+                <pre><code># Test the pipeline runs successfully
+nextflow run main.nf -profile test
+
+# Check outputs exist
+ls results/fastqc/
+ls results/counts/
+ls results/multiqc/
+
+# Validate output format
+head results/counts/gene_counts.txt</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>🛠️ Required Tools</h2>
+                
+                <h3>Nextflow Installation</h3>
+                <pre><code># Install Nextflow
+curl -s https://get.nextflow.io | bash
+sudo mv nextflow /usr/local/bin/
+
+# Verify
+nextflow -version</code></pre>
+
+                <h3>Docker/Singularity</h3>
+                <pre><code># Install Docker (Ubuntu)
+sudo apt-get install docker.io
+
+# Or install Singularity
+conda install -c conda-forge singularity</code></pre>
+
+                <h3>Reference Pipeline</h3>
+                <p>Learn from nf-core/rnaseq:</p>
+                <pre><code># View nf-core RNA-seq pipeline
+nextflow run nf-core/rnaseq -profile test,docker
+
+# Study the code
+git clone https://github.com/nf-core/rnaseq</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>📊 Grading Rubric</h2>
+                <table>
+                    <tr><th>Criteria</th><th>Points</th><th>What We're Looking For</th></tr>
+                    <tr><td>Pipeline Structure</td><td>25</td><td>Modular, follows DSL2</td></tr>
+                    <tr><td>Configuration</td><td>20</td><td>Flexible parameters, profiles</td></tr>
+                    <tr><td>Containerization</td><td>20</td><td>Reproducible, portable</td></tr>
+                    <tr><td>Documentation</td><td>20</td><td>Clear README, usage examples</td></tr>
+                    <tr><td>Testing</td><td>15</td><td>Pipeline runs successfully</td></tr>
+                    <tr><td><strong>Bonus</strong></td><td><strong>+10</strong></td><td>Extra features, CI/CD</td></tr>
+                </table>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 Best Practices Tips</h3>
+                <ul>
+                    <li><strong>Modular design:</strong> One process per task</li>
+                    <li><strong>Error handling:</strong> Use errorStrategy 'retry'</li>
+                    <li><strong>Resource specs:</strong> Define CPU/memory per process</li>
+                    <li><strong>Logging:</strong> Clear log messages at each step</li>
+                    <li><strong>Outputs:</strong> Organized in subdirectories</li>
+                    <li><strong>Resume:</strong> Pipeline should be resumable with -resume</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>🎨 Creativity Bonus</h2>
+                <ul>
+                    <li>🌟 <strong>Automatic resource optimization:</strong> Adjust CPU/memory based on input size</li>
+                    <li>🌟 <strong>GitHub Actions CI/CD:</strong> Auto-test pipeline on push</li>
+                    <li>🌟 <strong>Interactive HTML report:</strong> Beyond basic MultiQC</li>
+                    <li>🌟 <strong>Cloud deployment:</strong> AWS Batch or Google Cloud config</li>
+                    <li>🌟 <strong>Automatic outlier detection:</strong> Flag problematic samples</li>
+                    <li>🌟 <strong>Email notifications:</strong> Alert when pipeline completes</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📝 Submission Structure</h2>
+                <pre><code>rnaseq-pipeline/
+├── main.nf                  # Main workflow
+├── nextflow.config          # Configuration
+├── modules/                 # Process modules
+│   ├── fastqc.nf
+│   ├── trim.nf
+│   ├── align.nf
+│   ├── quantify.nf
+│   └── multiqc.nf
+├── conf/                    # Additional configs
+│   ├── base.config
+│   └── resources.config
+├── test_data/               # Small test files
+│   ├── sample_R1.fastq.gz
+│   └── sample_R2.fastq.gz
+├── docs/                    # Documentation
+│   ├── usage.md
+│   └── output.md
+├── Dockerfile               # Container definition
+├── .github/workflows/       # CI/CD (optional)
+│   └── ci.yml
+└── README.md                # Main documentation</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ README Badge Required</h3>
+                <pre><code># 🧬 GBBA BioHack 2026 Submission
+
+**Team:** [Name]
+**Challenge:** 5 - Pipeline Development
+
+📢 Instagram: [@gbba_northeastern](https://instagram.com/gbba_northeastern)
+💼 LinkedIn: [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)
+
+> ⚠️ Following required for evaluation</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>🎤 Presentation</h2>
+                <p><strong>Demo your pipeline live!</strong></p>
+                
+                <h3>Slide 1: Architecture</h3>
+                <ul>
+                    <li>Workflow diagram</li>
+                    <li>Key features</li>
+                    <li>Technology stack</li>
+                </ul>
+
+                <h3>Slide 2: Live Demo</h3>
+                <ul>
+                    <li>Show command to run</li>
+                    <li>Show results/outputs</li>
+                    <li>Highlight unique features</li>
+                </ul>
+            </div>
 
             <div style="text-align: center; margin: 3rem 0;">
-                <a href="../index.html#challenges" class="btn btn-primary">Back to All Challenges</a>
+                <a href="../databases.html" class="btn btn-secondary">Resources</a>
+                <a href="../index.html#challenges" class="btn btn-primary">Back to Challenges</a>
             </div>
         </div>
     </section>

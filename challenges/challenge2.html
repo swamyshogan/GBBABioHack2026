@@ -25,10 +25,10 @@
     <section class="challenge-header">
         <div class="container">
             <span class="difficulty intermediate">🟡 Intermediate</span>
-            <h1>🧬 Challenge 2: Variant Hunter</h1>
+            <h1>🧬 Challenge 2: Variant Hunter - Find the Pathogenic Mutation</h1>
             <div class="challenge-meta">
-                <div class="meta-item"><span>⏱️ Estimated Time: 5-6 hours</span></div>
-                <div class="meta-item"><span>👥 Team Size: 2-4 people</span></div>
+                <div class="meta-item"><span>⏱️ Time: 5-6 hours</span></div>
+                <div class="meta-item"><span>👥 Team: 2-4 people</span></div>
                 <div class="meta-item"><span>🏆 Points: 100</span></div>
             </div>
         </div>
@@ -40,26 +40,286 @@
 
             <div class="content-section">
                 <h2>🎯 Challenge Overview</h2>
-                <p>A 7-year-old patient presents with developmental delays, muscle weakness, and cardiac abnormalities. Clinical exome sequencing was performed, and you've been given the BAM file. Find the causative variant and build a case for your diagnosis.</p>
+                <p>A patient with a suspected genetic disorder has undergone whole genome sequencing. You have VCF files with ~3 million variants. Your mission: identify the likely disease-causing variant using clinical databases and variant annotation tools.</p>
             </div>
 
             <div class="info-box">
-                <h3>The Scenario</h3>
-                <p>You have:</p>
+                <h3>Clinical Scenario</h3>
+                <p><strong>Patient:</strong> 8-year-old child</p>
+                <p><strong>Phenotypes:</strong></p>
                 <ul>
-                    <li>Aligned sequencing reads (BAM file) for the patient</li>
-                    <li>Family history: Parents unaffected (suggesting recessive inheritance or de novo)</li>
-                    <li>Phenotypes: developmental delay, hypertrophic cardiomyopathy, hypotonia</li>
-                    <li>Previous genetic tests: Normal karyotype, negative for common muscular dystrophies</li>
+                    <li>Intellectual disability (moderate)</li>
+                    <li>Seizures (onset at age 2)</li>
+                    <li>Developmental delay</li>
+                    <li>Facial dysmorphisms</li>
                 </ul>
-                <p><strong>Your goal:</strong> Identify the most likely pathogenic variant and provide clinical evidence.</p>
+                <p><strong>Family History:</strong> Parents unaffected, no siblings</p>
+                <p><strong>Previous Testing:</strong> Chromosomal microarray normal</p>
+                <p><strong>Your Job:</strong> Find the pathogenic variant and build your case</p>
             </div>
 
-            <!-- Add similar sections as Challenge 1 -->
-            <!-- Data Access, Deliverables, Tools, Evaluation, etc. -->
+            <div class="content-section">
+                <h2>📥 Dataset Information</h2>
+                
+                <div class="success-box">
+                    <h3>Using Public Data from ClinVar</h3>
+                    <p>We'll provide you with a <strong>simulated patient VCF file</strong> that contains:</p>
+                    <ul>
+                        <li>~3 million real human variants from 1000 Genomes</li>
+                        <li>1 known pathogenic variant "spiked in" from ClinVar</li>
+                        <li>Benign and common population variants as noise</li>
+                    </ul>
+                </div>
+
+                <h3>Download Options</h3>
+                
+                <h4>Option 1: Use Our Pre-made VCF (Recommended)</h4>
+                <pre><code># Download from Google Drive
+wget "GDRIVE_LINK_HERE" -O patient_wgs.vcf.gz
+
+# Index the VCF
+tabix -p vcf patient_wgs.vcf.gz</code></pre>
+
+                <h4>Option 2: Create Your Own from 1000 Genomes</h4>
+                <pre><code># Download a 1000 Genomes sample
+wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_phased/CCDG_14151_B01_GRM_WGS_2020-08-05_chr20.filtered.shapeit2-duohmm-phased.vcf.gz
+
+# Subset to coding regions (if needed)
+bcftools view -r 20:1000000-2000000 input.vcf.gz -O z -o subset.vcf.gz</code></pre>
+
+                <h4>Reference Genome</h4>
+                <pre><code># Download GRCh38/hg38
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>📋 Required Deliverables</h2>
+                
+                <h3>1. Variant Filtering Strategy (25 points)</h3>
+                <p>Document your systematic approach to narrowing down millions of variants:</p>
+
+                <h4>A. Quality Filtering</h4>
+                <pre><code># Example with bcftools
+bcftools view -i 'QUAL>30 && DP>10' patient_wgs.vcf.gz -O z -o qc_pass.vcf.gz</code></pre>
+
+                <h4>B. Population Frequency Filtering</h4>
+                <ul>
+                    <li>Remove common variants (gnomAD MAF > 0.01)</li>
+                    <li>Focus on rare or novel variants</li>
+                    <li>Justify your frequency cutoff</li>
+                </ul>
+
+                <h4>C. Functional Impact Filtering</h4>
+                <ul>
+                    <li>Prioritize: Loss-of-function (LoF) variants</li>
+                    <li>Include: Missense variants with high CADD score</li>
+                    <li>Consider: Splice site variants</li>
+                </ul>
+
+                <h4>D. Phenotype-Based Filtering</h4>
+                <ul>
+                    <li>Search genes associated with: seizures, intellectual disability</li>
+                    <li>Use HPO terms to find relevant genes</li>
+                </ul>
+
+                <h3>2. Variant Annotation (30 points)</h3>
+                <p>Annotate your VCF using public tools and databases:</p>
+
+                <h4>Using ANNOVAR</h4>
+                <pre><code># Download ANNOVAR databases
+annotate_variation.pl -buildver hg38 -downdb -webfrom annovar refGene humandb/
+annotate_variation.pl -buildver hg38 -downdb -webfrom annovar gnomad312_genome humandb/
+annotate_variation.pl -buildver hg38 -downdb -webfrom annovar clinvar_20240917 humandb/
+
+# Annotate VCF
+table_annovar.pl patient_wgs.vcf.gz humandb/ \
+    -buildver hg38 \
+    -out patient_annotated \
+    -remove \
+    -protocol refGene,gnomad312_genome,clinvar_20240917 \
+    -operation g,f,f \
+    -nastring . \
+    -vcfinput</code></pre>
+
+                <h4>Or Using Ensembl VEP</h4>
+                <pre><code># Run VEP
+vep -i patient_wgs.vcf.gz \
+    -o patient_vep.vcf \
+    --cache \
+    --everything \
+    --assembly GRCh38 \
+    --vcf</code></pre>
+
+                <h3>3. Candidate Variant Report (30 points)</h3>
+                <p>Identify your top 3 candidate variants and create a detailed report:</p>
+
+                <h4>For Each Candidate, Include:</h4>
+                <ul>
+                    <li><strong>Genomic coordinates:</strong> Chr:Pos, Ref>Alt</li>
+                    <li><strong>Gene name:</strong> Which gene is affected?</li>
+                    <li><strong>Variant type:</strong> Missense, nonsense, frameshift, splice?</li>
+                    <li><strong>Population frequency:</strong> gnomAD allele frequency</li>
+                    <li><strong>ClinVar classification:</strong> Pathogenic? Likely pathogenic?</li>
+                    <li><strong>Predicted impact:</strong> SIFT, PolyPhen, CADD scores</li>
+                    <li><strong>Gene function:</strong> What does this gene do?</li>
+                    <li><strong>Disease association:</strong> OMIM, published cases</li>
+                    <li><strong>Phenotype match:</strong> Does it explain patient symptoms?</li>
+                </ul>
+
+                <h4>Example Candidate Entry:</h4>
+                <table>
+                    <tr><th>Field</th><th>Value</th></tr>
+                    <tr><td>Variant</td><td>chr15:48937205 G>A</td></tr>
+                    <tr><td>Gene</td><td>SCN1A</td></tr>
+                    <tr><td>Type</td><td>Missense (p.Arg1648His)</td></tr>
+                    <tr><td>gnomAD MAF</td><td>0.000001 (ultra-rare)</td></tr>
+                    <tr><td>ClinVar</td><td>Pathogenic</td></tr>
+                    <tr><td>CADD</td><td>28.4 (deleterious)</td></tr>
+                    <tr><td>Disease</td><td>Dravet syndrome (OMIM:607208)</td></tr>
+                    <tr><td>Phenotype Match</td><td>✓ Seizures, ✓ Developmental delay</td></tr>
+                </table>
+
+                <h3>4. Visual Evidence (10 points)</h3>
+                <ul>
+                    <li><strong>IGV screenshot:</strong> Show the variant in the genome browser</li>
+                    <li><strong>Filtering flowchart:</strong> Show how you went from 3M → final candidates</li>
+                    <li><strong>Comparison table:</strong> Rank your top candidates</li>
+                </ul>
+
+                <h3>5. Clinical Interpretation (5 points)</h3>
+                <ul>
+                    <li>Your final diagnosis (which variant? which disease?)</li>
+                    <li>ACMG classification (Pathogenic/Likely Pathogenic/VUS)</li>
+                    <li>Inheritance pattern (de novo? recessive? X-linked?)</li>
+                    <li>Recommendations for family (genetic counseling, testing parents)</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>🗄️ Required Databases</h2>
+                
+                <div class="info-box">
+                    <h3>Variant Annotation</h3>
+                    <ul>
+                        <li><strong>ClinVar:</strong> <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">https://www.ncbi.nlm.nih.gov/clinvar/</a></li>
+                        <li><strong>gnomAD:</strong> <a href="https://gnomad.broadinstitute.org/" target="_blank">https://gnomad.broadinstitute.org/</a></li>
+                        <li><strong>dbSNP:</strong> <a href="https://www.ncbi.nlm.nih.gov/snp/" target="_blank">https://www.ncbi.nlm.nih.gov/snp/</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Disease/Gene Information</h3>
+                    <ul>
+                        <li><strong>OMIM:</strong> <a href="https://www.omim.org/" target="_blank">https://www.omim.org/</a></li>
+                        <li><strong>HPO:</strong> <a href="https://hpo.jax.org/" target="_blank">https://hpo.jax.org/</a></li>
+                        <li><strong>Genecards:</strong> <a href="https://www.genecards.org/" target="_blank">https://www.genecards.org/</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Prediction Tools</h3>
+                    <ul>
+                        <li><strong>SIFT:</strong> Deleteriousness prediction</li>
+                        <li><strong>PolyPhen-2:</strong> Functional impact</li>
+                        <li><strong>CADD:</strong> Combined score</li>
+                        <li><strong>AlphaMissense:</strong> AI-based prediction</li>
+                    </ul>
+                </div>
+
+                <p>Full database list: <a href="../databases.html">Databases & Resources</a></p>
+            </div>
+
+            <div class="content-section">
+                <h2>🛠️ Required Tools</h2>
+                
+                <pre><code># Install annotation tools
+conda install -c bioconda annovar
+# OR
+conda install -c bioconda ensembl-vep
+
+# VCF manipulation
+conda install -c bioconda bcftools vcftools
+
+# Genome browser
+conda install -c bioconda igv
+
+# Python for custom filtering
+conda install pandas pysam</code></pre>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 Analysis Strategy Tips</h3>
+                <ol>
+                    <li><strong>Start broad, filter narrow:</strong> 3M variants → 100K rare → 1K functional → 10 phenotype-match</li>
+                    <li><strong>Use HPO for phenotype matching:</strong> Search "seizures" + "intellectual disability"</li>
+                    <li><strong>Check ClinVar first:</strong> Known pathogenic variants are your best bet</li>
+                    <li><strong>Consider inheritance:</strong> De novo mutations are strong candidates for severe pediatric disorders</li>
+                    <li><strong>Look for LoF in haploinsufficient genes:</strong> High-impact variants</li>
+                    <li><strong>Cross-reference sources:</strong> ClinVar + OMIM + PubMed for validation</li>
+                </ol>
+            </div>
+
+            <div class="content-section">
+                <h2>📊 Grading Rubric</h2>
+                <table>
+                    <tr><th>Criteria</th><th>Points</th><th>What We're Looking For</th></tr>
+                    <tr><td>Filtering Strategy</td><td>25</td><td>Systematic, well-justified approach</td></tr>
+                    <tr><td>Variant Annotation</td><td>30</td><td>Comprehensive use of databases</td></tr>
+                    <tr><td>Candidate Report</td><td>30</td><td>Detailed evidence for top variants</td></tr>
+                    <tr><td>Visual Evidence</td><td>10</td><td>Clear IGV screenshots, flowcharts</td></tr>
+                    <tr><td>Clinical Interpretation</td><td>5</td><td>Accurate ACMG classification</td></tr>
+                    <tr><td><strong>Bonus</strong></td><td><strong>+10</strong></td><td>Novel analyses, scripts, visualization</td></tr>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <h2>🎨 Creativity Bonus Ideas</h2>
+                <ul>
+                    <li>🌟 <strong>Automated prioritization script:</strong> Python/R to rank variants</li>
+                    <li>🌟 <strong>Interactive variant browser:</strong> Shiny app to explore candidates</li>
+                    <li>🌟 <strong>Network analysis:</strong> Protein interaction networks around candidate genes</li>
+                    <li>🌟 <strong>Literature mining:</strong> Automated PubMed search for gene-phenotype associations</li>
+                    <li>🌟 <strong>ACMG rule automation:</strong> Script to apply ACMG criteria</li>
+                </ul>
+            </div>
+
+            <div class="content-section">
+                <h2>📝 Submission</h2>
+                <pre><code>challenge2-variant-hunter/
+├── README.md
+├── data/
+│   └── download_instructions.md
+├── scripts/
+│   ├── 01_annotate_variants.sh
+│   ├── 02_filter_variants.py
+│   └── 03_prioritize_candidates.R
+├── results/
+│   ├── filtered_variants.vcf
+│   ├── top_candidates.xlsx
+│   └── igv_screenshots/
+├── report/
+│   └── clinical_report.pdf
+└── presentation/
+    └── slides.pdf</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Mandatory README Badge</h3>
+                <pre><code># 🧬 GBBA BioHack 2026 Submission
+
+**Team Name:** [Your Team]
+**Challenge:** Challenge 2 - Variant Hunter
+
+📢 **Follow us:**
+- Instagram: [@gbba_northeastern](https://instagram.com/gbba_northeastern)
+- LinkedIn: [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)
+
+> ⚠️ Mandatory for evaluation</code></pre>
+            </div>
 
             <div style="text-align: center; margin: 3rem 0;">
-                <a href="../index.html#challenges" class="btn btn-primary">Back to All Challenges</a>
+                <a href="../databases.html" class="btn btn-secondary">Database Resources</a>
+                <a href="../index.html#challenges" class="btn btn-primary">Back to Challenges</a>
             </div>
         </div>
     </section>

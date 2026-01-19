@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge 3: Differential Expression Storyteller | GBBA BioHack 2026</title>
+    <title>Challenge 3: RNA-seq Storyteller | GBBA BioHack 2026</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
                 </div>
                 <div class="event-details">
                     <h3>January 22-23, 2026</h3>
-                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
+                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back</a></p>
                 </div>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <span class="difficulty intermediate">🟠 Intermediate</span>
             <h1>📊 Challenge 3: Differential Expression Storyteller</h1>
             <div class="challenge-meta">
-                <div class="meta-item"><span>⏱️ Estimated Time: 5-6 hours</span></div>
-                <div class="meta-item"><span>👥 Team Size: 2-4 people</span></div>
-                <div class="meta-item"><span>🏆 Points: 100</span></div>
+                <div class="meta-item"><span>⏱️ 5-6 hours</span></div>
+                <div class="meta-item"><span>👥 2-4 people</span></div>
+                <div class="meta-item"><span>🏆 100 points</span></div>
             </div>
         </div>
     </section>
@@ -40,13 +40,241 @@
 
             <div class="content-section">
                 <h2>🎯 Challenge Overview</h2>
-                <p>A pharmaceutical company is developing a novel cancer therapeutic targeting the PI3K/AKT/mTOR pathway. They've treated triple-negative breast cancer cells with their compound for 24 hours and performed RNA-seq. Your job: Tell the biological story of what's happening in these cells.</p>
+                <p>Analyze RNA-seq data from a cancer drug treatment experiment. Find differentially expressed genes, identify affected pathways, and <strong>tell the biological story</strong> of what's happening at the molecular level.</p>
             </div>
 
-            <!-- Add similar sections as Challenge 1 -->
+            <div class="info-box">
+                <h3>The Experiment</h3>
+                <p><strong>Cell Line:</strong> Human cancer cells (breast or lung)</p>
+                <p><strong>Treatment:</strong> Novel therapeutic compound vs. vehicle control</p>
+                <p><strong>Time Point:</strong> 24 hours post-treatment</p>
+                <p><strong>Replicates:</strong> 3 control, 3 treated</p>
+                <p><strong>Your Job:</strong> What is this drug doing to the cells?</p>
+            </div>
+
+            <div class="content-section">
+                <h2>📥 Dataset - Public RNA-seq from GEO</h2>
+                
+                <div class="success-box">
+                    <h3>Option 1: Download from GEO (Gene Expression Omnibus)</h3>
+                    <p>Use a real published dataset:</p>
+                    <ul>
+                        <li><strong>Example GEO Series:</strong> GSE183947 (breast cancer drug treatment)</li>
+                        <li><strong>Data Type:</strong> Pre-computed count matrix</li>
+                        <li><strong>Format:</strong> Tab-delimited text file</li>
+                    </ul>
+                    
+                    <pre><code># Download from GEO using R
+library(GEOquery)
+gse <- getGEO("GSE183947")
+counts <- exprs(gse[[1]])
+
+# Or download directly from GEO website:
+# https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183947</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <h3>Option 2: Use TCGA Data</h3>
+                    <pre><code># Download using TCGAbiolinks
+library(TCGAbiolinks)
+query <- GDCquery(
+    project = "TCGA-BRCA",
+    data.category = "Transcriptome Profiling",
+    data.type = "Gene Expression Quantification",
+    workflow.type = "STAR - Counts"
+)
+GDCdownload(query)
+data <- GDCprepare(query)</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>We'll Provide</h3>
+                    <p>To save time, we'll provide a <strong>cleaned count matrix</strong> ready for analysis:</p>
+                    <ul>
+                        <li>6 samples × ~20,000 genes</li>
+                        <li>Sample metadata (control vs. treated)</li>
+                        <li>Gene annotations (ENSEMBL IDs mapped to symbols)</li>
+                    </ul>
+                    <p><strong>Download:</strong> [Google Drive link - provided Jan 21]</p>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>📋 Required Deliverables</h2>
+                
+                <h3>1. Quality Control & Exploratory Analysis (20 points)</h3>
+                <pre><code>library(DESeq2)
+library(ggplot2)
+
+# Load data
+counts <- read.table("counts.txt", header=TRUE, row.names=1)
+metadata <- read.table("metadata.txt", header=TRUE)
+
+# Create DESeq2 object
+dds <- DESeqDataSetFromMatrix(
+    countData = counts,
+    colData = metadata,
+    design = ~ condition
+)
+
+# Filter low counts
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+
+# Normalize
+dds <- estimateSizeFactors(dds)
+
+# PCA plot
+vsd <- vst(dds)
+plotPCA(vsd, intgroup="condition")
+
+# Sample correlation heatmap
+library(pheatmap)
+sampleDists <- dist(t(assay(vsd)))
+pheatmap(as.matrix(sampleDists))</code></pre>
+
+                <h3>2. Differential Expression Analysis (30 points)</h3>
+                <pre><code># Run DESeq2
+dds <- DESeq(dds)
+res <- results(dds, alpha=0.05)
+
+# Extract significant genes
+sig_genes <- subset(res, padj < 0.05 & abs(log2FoldChange) > 1)
+
+# Separate up and down
+up_genes <- subset(sig_genes, log2FoldChange > 1)
+down_genes <- subset(sig_genes, log2FoldChange < -1)
+
+# Summary statistics
+summary(res)
+table(sig_genes$log2FoldChange > 0)</code></pre>
+
+                <h4>Required Visualizations:</h4>
+                <ul>
+                    <li><strong>Volcano Plot:</strong> Show all genes, highlight significant</li>
+                    <li><strong>MA Plot:</strong> Log2FC vs. mean expression</li>
+                    <li><strong>Heatmap:</strong> Top 50 DE genes</li>
+                    <li><strong>PCA:</strong> Sample clustering</li>
+                </ul>
+
+                <h3>3. Pathway Enrichment Analysis (30 points)</h3>
+                <pre><code>library(clusterProfiler)
+library(org.Hs.eg.db)
+
+# Convert to Entrez IDs
+up_entrez <- bitr(rownames(up_genes), 
+                  fromType="SYMBOL", toType="ENTREZID",
+                  OrgDb=org.Hs.eg.db)
+
+# GO Enrichment
+go_up <- enrichGO(gene = up_entrez$ENTREZID,
+                  OrgDb = org.Hs.eg.db,
+                  ont = "BP",
+                  pvalueCutoff = 0.05)
+
+# KEGG Pathway
+kegg_up <- enrichKEGG(gene = up_entrez$ENTREZID,
+                      organism = 'hsa',
+                      pvalueCutoff = 0.05)
+
+# Dot plot
+dotplot(go_up, showCategory=20)
+dotplot(kegg_up)</code></pre>
+
+                <h4>Required Analyses:</h4>
+                <ul>
+                    <li>GO Enrichment (up-regulated genes)</li>
+                    <li>GO Enrichment (down-regulated genes)</li>
+                    <li>KEGG Pathway enrichment</li>
+                    <li>Reactome pathway analysis (optional)</li>
+                </ul>
+
+                <h3>4. The Biological Story (20 points)</h3>
+                <p><strong>This is the key deliverable!</strong> Write a 1-2 page narrative explaining:</p>
+
+                <h4>A. What's Being Activated?</h4>
+                <ul>
+                    <li>What pathways are up-regulated?</li>
+                    <li>What biological processes are enhanced?</li>
+                    <li>What does this tell us about the drug's mechanism?</li>
+                </ul>
+
+                <h4>B. What's Being Suppressed?</h4>
+                <ul>
+                    <li>What pathways are down-regulated?</li>
+                    <li>Is this expected? (e.g., cell cycle arrest in cancer treatment)</li>
+                </ul>
+
+                <h4>C. Clinical Implications</h4>
+                <ul>
+                    <li>Is the drug hitting its intended target?</li>
+                    <li>Any unexpected effects?</li>
+                    <li>Potential resistance mechanisms?</li>
+                    <li>Biomarkers for patient selection?</li>
+                </ul>
+
+                <h4>D. Visual Summary</h4>
+                <p>Create an infographic or pathway diagram showing the key story</p>
+            </div>
+
+            <div class="content-section">
+                <h2>🗄️ Databases & Resources</h2>
+                <ul>
+                    <li><strong>GEO:</strong> <a href="https://www.ncbi.nlm.nih.gov/geo/">https://www.ncbi.nlm.nih.gov/geo/</a></li>
+                    <li><strong>GO:</strong> <a href="http://geneontology.org/">http://geneontology.org/</a></li>
+                    <li><strong>KEGG:</strong> <a href="https://www.genome.jp/kegg/">https://www.genome.jp/kegg/</a></li>
+                    <li><strong>Reactome:</strong> <a href="https://reactome.org/">https://reactome.org/</a></li>
+                    <li><strong>STRING:</strong> <a href="https://string-db.org/">https://string-db.org/</a></li>
+                </ul>
+                <p>Full list: <a href="../databases.html">Database Resources</a></p>
+            </div>
+
+            <div class="content-section">
+                <h2>🛠️ Required Tools</h2>
+                <pre><code># R packages
+install.packages("BiocManager")
+BiocManager::install(c("DESeq2", "clusterProfiler", 
+                       "org.Hs.eg.db", "ggplot2", 
+                       "pheatmap", "EnhancedVolcano"))</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>📊 Grading Rubric</h2>
+                <table>
+                    <tr><th>Criteria</th><th>Points</th></tr>
+                    <tr><td>QC & Exploratory Analysis</td><td>20</td></tr>
+                    <tr><td>DE Analysis</td><td>30</td></tr>
+                    <tr><td>Pathway Enrichment</td><td>30</td></tr>
+                    <tr><td>Biological Story</td><td>20</td></tr>
+                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td></tr>
+                </table>
+            </div>
+
+            <div class="content-section">
+                <h2>🎨 Creativity Bonus</h2>
+                <ul>
+                    <li>🌟 Interactive Shiny app for exploring results</li>
+                    <li>🌟 Network visualization of gene interactions</li>
+                    <li>🌟 GSEA analysis instead of standard enrichment</li>
+                    <li>🌟 Integration with TCGA for validation</li>
+                    <li>🌟 Drug repurposing suggestions based on signatures</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ README Badge Required</h3>
+                <pre><code># 🧬 GBBA BioHack 2026
+
+**Team:** [Name]
+**Challenge:** 3 - Differential Expression
+
+📢 [@gbba_northeastern](https://instagram.com/gbba_northeastern)
+💼 [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)</code></pre>
+            </div>
 
             <div style="text-align: center; margin: 3rem 0;">
-                <a href="../index.html#challenges" class="btn btn-primary">Back to All Challenges</a>
+                <a href="../databases.html" class="btn btn-secondary">Databases</a>
+                <a href="../index.html#challenges" class="btn btn-primary">Back</a>
             </div>
         </div>
     </section>

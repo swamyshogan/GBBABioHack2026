@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Databases & Resources | GBBA BioHack 2026</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🧬 GBBA BioHack 2026</h1>
+                    <p>Innovate. Analyze. Transform.</p>
+                </div>
+                <div class="event-details">
+                    <h3>January 22-23, 2026</h3>
+                    <p><a href="index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="challenge-header">
+        <div class="container">
+            <h1>🗄️ Databases & Resources</h1>
+            <p style="margin-top: 1rem; font-size: 1.1rem;">Free, publicly available databases and tools for your hackathon projects</p>
+        </div>
+    </section>
+
+    <section class="challenge-content">
+        <div class="container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+
+            <div class="info-box">
+                <h3>📌 Quick Reference Guide</h3>
+                <p>All databases listed here are <strong>free and publicly accessible</strong>. No paid subscriptions or institutional access required. Perfect for building your challenge solutions!</p>
+            </div>
+
+            <!-- SEQUENCING DATA -->
+            <div class="content-section">
+                <h2>🧬 Sequencing Data Repositories</h2>
+                
+                <div class="info-box">
+                    <h3>NCBI SRA (Sequence Read Archive)</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ncbi.nlm.nih.gov/sra" target="_blank">https://www.ncbi.nlm.nih.gov/sra</a></p>
+                    <p><strong>What it is:</strong> Largest public repository of raw sequencing data (FASTQ files)</p>
+                    <p><strong>Use for:</strong> RNA-seq, WGS, ChIP-seq, ATAC-seq data for any organism</p>
+                    <p><strong>How to download:</strong></p>
+                    <pre><code># Install SRA Toolkit
+conda install -c bioconda sra-tools
+
+# Download data by accession
+fastq-dump --split-files SRR1234567
+# or with faster tool
+fasterq-dump SRR1234567</code></pre>
+                    <p><strong>Pro tip:</strong> Search by organism, experiment type, or publication</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ENA (European Nucleotide Archive)</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ebi.ac.uk/ena" target="_blank">https://www.ebi.ac.uk/ena</a></p>
+                    <p><strong>What it is:</strong> European mirror of SRA with often faster downloads</p>
+                    <p><strong>Use for:</strong> Same as SRA, often easier to download directly</p>
+                    <p><strong>How to download:</strong> Direct FASTQ download links available in browser</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>GEO (Gene Expression Omnibus)</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">https://www.ncbi.nlm.nih.gov/geo/</a></p>
+                    <p><strong>What it is:</strong> Processed gene expression data and count matrices</p>
+                    <p><strong>Use for:</strong> RNA-seq count tables, microarray data, ready-to-analyze datasets</p>
+                    <p><strong>How to download:</strong> Download supplementary files from GEO series pages</p>
+                </div>
+            </div>
+
+            <!-- REFERENCE GENOMES -->
+            <div class="content-section">
+                <h2>📚 Reference Genomes & Annotations</h2>
+                
+                <div class="info-box">
+                    <h3>NCBI RefSeq</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ncbi.nlm.nih.gov/refseq/" target="_blank">https://www.ncbi.nlm.nih.gov/refseq/</a></p>
+                    <p><strong>What it is:</strong> Curated reference sequences for all organisms</p>
+                    <p><strong>Use for:</strong> Genome FASTA files, gene annotations (GFF/GTF)</p>
+                    <pre><code># Download human genome (example)
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>Ensembl</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ensembl.org" target="_blank">https://www.ensembl.org</a></p>
+                    <p><strong>What it is:</strong> Genome browser and reference genome provider</p>
+                    <p><strong>Use for:</strong> Human, mouse, and model organism genomes with annotations</p>
+                    <p><strong>FTP:</strong> <a href="http://ftp.ensembl.org/pub/" target="_blank">ftp.ensembl.org/pub/</a></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>GENCODE</h3>
+                    <p><strong>URL:</strong> <a href="https://www.gencodegenes.org/" target="_blank">https://www.gencodegenes.org/</a></p>
+                    <p><strong>What it is:</strong> High-quality human and mouse gene annotations</p>
+                    <p><strong>Use for:</strong> GTF/GFF files for RNA-seq quantification</p>
+                </div>
+            </div>
+
+            <!-- VARIANT DATABASES -->
+            <div class="content-section">
+                <h2>🔬 Variant & Mutation Databases</h2>
+                
+                <div class="info-box">
+                    <h3>ClinVar</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">https://www.ncbi.nlm.nih.gov/clinvar/</a></p>
+                    <p><strong>What it is:</strong> Clinical significance of genomic variants</p>
+                    <p><strong>Use for:</strong> Pathogenic variant classification, clinical interpretation</p>
+                    <p><strong>Download:</strong> VCF files available on FTP</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>gnomAD</h3>
+                    <p><strong>URL:</strong> <a href="https://gnomad.broadinstitute.org/" target="_blank">https://gnomad.broadinstitute.org/</a></p>
+                    <p><strong>What it is:</strong> Population allele frequencies from 125,000+ exomes</p>
+                    <p><strong>Use for:</strong> Filter common variants, determine rarity</p>
+                    <p><strong>Download:</strong> VCF files by chromosome</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>dbSNP</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ncbi.nlm.nih.gov/snp/" target="_blank">https://www.ncbi.nlm.nih.gov/snp/</a></p>
+                    <p><strong>What it is:</strong> Database of genetic variation (SNPs, indels)</p>
+                    <p><strong>Use for:</strong> Variant IDs (rs numbers), known polymorphisms</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>COSMIC</h3>
+                    <p><strong>URL:</strong> <a href="https://cancer.sanger.ac.uk/cosmic" target="_blank">https://cancer.sanger.ac.uk/cosmic</a></p>
+                    <p><strong>What it is:</strong> Catalogue of Somatic Mutations in Cancer</p>
+                    <p><strong>Use for:</strong> Cancer-associated mutations</p>
+                    <p><strong>Note:</strong> Free for academic use (registration required)</p>
+                </div>
+            </div>
+
+            <!-- CLINICAL & DISEASE -->
+            <div class="content-section">
+                <h2>🏥 Clinical & Disease Databases</h2>
+                
+                <div class="info-box">
+                    <h3>OMIM</h3>
+                    <p><strong>URL:</strong> <a href="https://www.omim.org/" target="_blank">https://www.omim.org/</a></p>
+                    <p><strong>What it is:</strong> Online Mendelian Inheritance in Man</p>
+                    <p><strong>Use for:</strong> Gene-disease associations, Mendelian disorders</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>HPO (Human Phenotype Ontology)</h3>
+                    <p><strong>URL:</strong> <a href="https://hpo.jax.org/" target="_blank">https://hpo.jax.org/</a></p>
+                    <p><strong>What it is:</strong> Standardized vocabulary for phenotypes</p>
+                    <p><strong>Use for:</strong> Phenotype-driven variant prioritization</p>
+                    <p><strong>Download:</strong> OBO/OWL files available</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>DisGeNET</h3>
+                    <p><strong>URL:</strong> <a href="https://www.disgenet.org/" target="_blank">https://www.disgenet.org/</a></p>
+                    <p><strong>What it is:</strong> Gene-disease associations from multiple sources</p>
+                    <p><strong>Use for:</strong> Disease candidate genes, prioritization</p>
+                </div>
+            </div>
+
+            <!-- PATHWAY & FUNCTIONAL -->
+            <div class="content-section">
+                <h2>🛤️ Pathway & Functional Annotation</h2>
+                
+                <div class="info-box">
+                    <h3>KEGG</h3>
+                    <p><strong>URL:</strong> <a href="https://www.genome.jp/kegg/" target="_blank">https://www.genome.jp/kegg/</a></p>
+                    <p><strong>What it is:</strong> Pathway maps and molecular interaction networks</p>
+                    <p><strong>Use for:</strong> Pathway enrichment, metabolic pathways</p>
+                    <p><strong>R package:</strong> <code>KEGGREST</code>, <code>clusterProfiler</code></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Reactome</h3>
+                    <p><strong>URL:</strong> <a href="https://reactome.org/" target="_blank">https://reactome.org/</a></p>
+                    <p><strong>What it is:</strong> Curated pathway database</p>
+                    <p><strong>Use for:</strong> Pathway enrichment analysis, visualization</p>
+                    <p><strong>Download:</strong> GMT files for enrichment analysis</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Gene Ontology (GO)</h3>
+                    <p><strong>URL:</strong> <a href="http://geneontology.org/" target="_blank">http://geneontology.org/</a></p>
+                    <p><strong>What it is:</strong> Controlled vocabulary for gene function</p>
+                    <p><strong>Use for:</strong> Functional enrichment (BP, MF, CC)</p>
+                    <p><strong>R package:</strong> <code>org.Hs.eg.db</code>, <code>clusterProfiler</code></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>MSigDB</h3>
+                    <p><strong>URL:</strong> <a href="https://www.gsea-msigdb.org/gsea/msigdb/" target="_blank">https://www.gsea-msigdb.org/gsea/msigdb/</a></p>
+                    <p><strong>What it is:</strong> Molecular Signatures Database</p>
+                    <p><strong>Use for:</strong> Gene set enrichment analysis (GSEA)</p>
+                    <p><strong>Collections:</strong> Hallmarks, GO, KEGG, Reactome, oncogenic signatures</p>
+                </div>
+            </div>
+
+            <!-- PROTEIN & INTERACTION -->
+            <div class="content-section">
+                <h2>🧪 Protein & Interaction Databases</h2>
+                
+                <div class="info-box">
+                    <h3>UniProt</h3>
+                    <p><strong>URL:</strong> <a href="https://www.uniprot.org/" target="_blank">https://www.uniprot.org/</a></p>
+                    <p><strong>What it is:</strong> Protein sequences and functional information</p>
+                    <p><strong>Use for:</strong> Protein function, domains, families</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>STRING</h3>
+                    <p><strong>URL:</strong> <a href="https://string-db.org/" target="_blank">https://string-db.org/</a></p>
+                    <p><strong>What it is:</strong> Protein-protein interaction networks</p>
+                    <p><strong>Use for:</strong> Network analysis, functional partners</p>
+                    <p><strong>Download:</strong> Interaction files, API available</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>PDB (Protein Data Bank)</h3>
+                    <p><strong>URL:</strong> <a href="https://www.rcsb.org/" target="_blank">https://www.rcsb.org/</a></p>
+                    <p><strong>What it is:</strong> 3D protein structures</p>
+                    <p><strong>Use for:</strong> Structural analysis, variant impact prediction</p>
+                </div>
+            </div>
+
+            <!-- CANCER GENOMICS -->
+            <div class="content-section">
+                <h2>🎗️ Cancer Genomics Databases</h2>
+                
+                <div class="info-box">
+                    <h3>TCGA (via GDC)</h3>
+                    <p><strong>URL:</strong> <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></p>
+                    <p><strong>What it is:</strong> The Cancer Genome Atlas data</p>
+                    <p><strong>Use for:</strong> Multi-omics cancer data (genomics, transcriptomics, clinical)</p>
+                    <p><strong>Download:</strong> Use GDC Data Portal or <code>TCGAbiolinks</code> R package</p>
+                    <pre><code># R example
+library(TCGAbiolinks)
+query <- GDCquery(project = "TCGA-BRCA", 
+                  data.category = "Transcriptome Profiling")
+GDCdownload(query)</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>cBioPortal</h3>
+                    <p><strong>URL:</strong> <a href="https://www.cbioportal.org/" target="_blank">https://www.cbioportal.org/</a></p>
+                    <p><strong>What it is:</strong> Cancer genomics data visualization and analysis</p>
+                    <p><strong>Use for:</strong> Explore TCGA and other cancer studies</p>
+                    <p><strong>API:</strong> Programmatic access available</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>DepMap</h3>
+                    <p><strong>URL:</strong> <a href="https://depmap.org/portal/" target="_blank">https://depmap.org/portal/</a></p>
+                    <p><strong>What it is:</strong> Cancer Dependency Map</p>
+                    <p><strong>Use for:</strong> Gene essentiality in cancer cell lines</p>
+                    <p><strong>Download:</strong> CRISPR, RNAi screening data</p>
+                </div>
+            </div>
+
+            <!-- DRUG & PHARMACOGENOMICS -->
+            <div class="content-section">
+                <h2>💊 Drug & Pharmacogenomics</h2>
+                
+                <div class="info-box">
+                    <h3>DGIdb</h3>
+                    <p><strong>URL:</strong> <a href="https://www.dgidb.org/" target="_blank">https://www.dgidb.org/</a></p>
+                    <p><strong>What it is:</strong> Drug-gene interaction database</p>
+                    <p><strong>Use for:</strong> Drug targets, therapeutic opportunities</p>
+                    <p><strong>Download:</strong> TSV files available</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>DrugBank</h3>
+                    <p><strong>URL:</strong> <a href="https://go.drugbank.com/" target="_blank">https://go.drugbank.com/</a></p>
+                    <p><strong>What it is:</strong> Comprehensive drug data resource</p>
+                    <p><strong>Use for:</strong> Drug mechanisms, targets, interactions</p>
+                    <p><strong>Note:</strong> Free for academic use (registration required)</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ChEMBL</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ebi.ac.uk/chembl/" target="_blank">https://www.ebi.ac.uk/chembl/</a></p>
+                    <p><strong>What it is:</strong> Bioactive molecules with drug-like properties</p>
+                    <p><strong>Use for:</strong> Drug discovery, compound screening data</p>
+                </div>
+            </div>
+
+            <!-- TOOLS & SOFTWARE -->
+            <div class="content-section">
+                <h2>🛠️ Essential Bioinformatics Tools</h2>
+                
+                <div class="info-box">
+                    <h3>BLAST</h3>
+                    <p><strong>URL:</strong> <a href="https://blast.ncbi.nlm.nih.gov/" target="_blank">https://blast.ncbi.nlm.nih.gov/</a></p>
+                    <p><strong>What it is:</strong> Sequence similarity search</p>
+                    <p><strong>Install:</strong> <code>conda install -c bioconda blast</code></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>ANNOVAR</h3>
+                    <p><strong>URL:</strong> <a href="https://annovar.openbioinformatics.org/" target="_blank">https://annovar.openbioinformatics.org/</a></p>
+                    <p><strong>What it is:</strong> Variant annotation tool</p>
+                    <p><strong>Use for:</strong> Annotate VCF files with multiple databases</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>VEP (Variant Effect Predictor)</h3>
+                    <p><strong>URL:</strong> <a href="https://www.ensembl.org/vep" target="_blank">https://www.ensembl.org/vep</a></p>
+                    <p><strong>What it is:</strong> Ensembl's variant annotation tool</p>
+                    <p><strong>Install:</strong> <code>conda install -c bioconda ensembl-vep</code></p>
+                </div>
+
+                <div class="info-box">
+                    <h3>IGV (Integrative Genomics Viewer)</h3>
+                    <p><strong>URL:</strong> <a href="https://software.broadinstitute.org/software/igv/" target="_blank">https://software.broadinstitute.org/software/igv/</a></p>
+                    <p><strong>What it is:</strong> Genome browser and visualization tool</p>
+                    <p><strong>Use for:</strong> Visualize BAM, VCF, BED files</p>
+                </div>
+            </div>
+
+            <!-- QUICK START EXAMPLES -->
+            <div class="content-section">
+                <h2>🚀 Quick Start Examples</h2>
+                
+                <div class="success-box">
+                    <h3>Example 1: Download RNA-seq Data from SRA</h3>
+                    <pre><code># Install SRA toolkit
+conda install -c bioconda sra-tools
+
+# Download by accession
+fasterq-dump SRR1234567
+
+# Results: SRR1234567_1.fastq and SRR1234567_2.fastq</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <h3>Example 2: Get Human Reference Genome</h3>
+                    <pre><code># Download from NCBI
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+
+# Or from Ensembl
+wget http://ftp.ensembl.org/pub/release-110/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <h3>Example 3: Pathway Enrichment in R</h3>
+                    <pre><code>library(clusterProfiler)
+library(org.Hs.eg.db)
+
+# Your gene list
+genes <- c("TP53", "BRCA1", "EGFR", "KRAS")
+
+# GO enrichment
+go_results <- enrichGO(gene = genes,
+                       OrgDb = org.Hs.eg.db,
+                       keyType = "SYMBOL",
+                       ont = "BP")
+
+# KEGG enrichment
+kegg_results <- enrichKEGG(gene = genes,
+                          organism = "hsa")</code></pre>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                <h3>⚠️ Important Notes</h3>
+                <ul>
+                    <li><strong>Large downloads:</strong> Some files are 10+ GB. Plan accordingly!</li>
+                    <li><strong>Registration:</strong> Some databases require free academic registration</li>
+                    <li><strong>Citations:</strong> Always cite the databases you use in your presentations</li>
+                    <li><strong>Terms of use:</strong> Check usage terms for each database</li>
+                    <li><strong>Storage:</strong> Ensure you have enough disk space before downloading</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0;">
+                <a href="index.html" class="btn btn-primary">Back to Home</a>
+                <a href="index.html#challenges" class="btn btn-secondary">View Challenges</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Graduate Biotechnology Business Association (GBBA) - Northeastern University</p>
+            <p style="margin-top: 0.5rem;">Organized with ❤️ by GBBA volunteers</p>
+        </div>
+    </footer>
+</body>
+</html>
