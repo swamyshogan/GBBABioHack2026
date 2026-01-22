@@ -51,7 +51,7 @@
 
             <div class="info-box">
                 <h3>The Scenario</h3>
-                <p>A microbiology lab studying <em>E. coli</em> stress response sent you their RNA-seq data. Their in-house pipeline failed with cryptic error messages. They need you to:</p>
+                <p>A microbiology lab studying bacterial stress response sent you their RNA-seq data. Their in-house pipeline failed with cryptic error messages. They need you to:</p>
                 <ul>
                     <li><strong>Diagnose</strong> what went wrong with the sequencing data</li>
                     <li><strong>Identify</strong> specific quality issues (adapters? contamination? degradation?)</li>
@@ -64,60 +64,97 @@
                 <h2>📥 Dataset Information</h2>
                 
                 <div class="success-box">
-                    <h3>Public Dataset from NCBI SRA</h3>
-                    <p>We're providing you with <strong>real bacterial RNA-seq data from NCBI SRA</strong> that has known quality issues.</p>
+                    <h3>Find Your Own Dataset from Public Repositories</h3>
+                    <p>Part of being a bioinformatics consultant is finding and evaluating data. <strong>You'll search public repositories and select your own bacterial RNA-seq dataset</strong> that has quality issues to investigate.</p>
                     
-                    <p><strong>Dataset Details:</strong></p>
+                    <p><strong>Dataset Requirements:</strong></p>
                     <ul>
-                        <li><strong>Organism:</strong> <em>Escherichia coli</em> str. K-12</li>
-                        <li><strong>Experiment Type:</strong> RNA-seq (paired-end)</li>
+                        <li><strong>Organism:</strong> Any bacterial species (<em>E. coli</em>, <em>Salmonella</em>, <em>Pseudomonas</em>, <em>Bacillus</em>, etc.)</li>
+                        <li><strong>Experiment Type:</strong> RNA-seq</li>
+                        <li><strong>Read Type:</strong> Paired-end (preferred) or single-end</li>
                         <li><strong>Platform:</strong> Illumina</li>
-                        <li><strong>Read Length:</strong> 150 bp</li>
-                        <li><strong>Samples:</strong> 3 samples (different time points or conditions)</li>
+                        <li><strong>Samples:</strong> At least 2-3 samples from the same study</li>
+                        <li><strong>Size:</strong> 5-20 million reads per sample (manageable for hackathon timeframe)</li>
                     </ul>
 
-                    <h4>Option 1: Download from SRA (Recommended)</h4>
-                    <p>You can download directly from NCBI SRA using these accessions:</p>
+                    <h4>Where to Search: NCBI Sequence Read Archive (SRA)</h4>
+                    <p>Primary repository for sequencing data: <a href="https://www.ncbi.nlm.nih.gov/sra" target="_blank">https://www.ncbi.nlm.nih.gov/sra</a></p>
+                    
+                    <p><strong>Example search queries:</strong></p>
+                    <ul>
+                        <li>"Escherichia coli"[Organism] AND "RNA-seq"[Strategy] AND "Illumina"[Platform]</li>
+                        <li>"bacterial transcriptome"[All Fields] AND "paired"[Layout]</li>
+                        <li>Browse by BioProject to find studies with multiple related samples</li>
+                    </ul>
+
+                    <h4>How to Download from SRA</h4>
                     <pre><code># Install SRA toolkit
 conda install -c bioconda sra-tools
 
-# Download samples (examples - actual accessions will be provided)
-fasterq-dump SRR6357070  # Sample 1
-fasterq-dump SRR6357071  # Sample 2
-fasterq-dump SRR6357072  # Sample 3
+# Download a sample (replace SRR####### with your accession)
+fasterq-dump SRR#######
 
-# Or download all at once
-for acc in SRR6357070 SRR6357071 SRR6357072; do
+# For paired-end data, this creates:
+# SRR#######_1.fastq  SRR#######_2.fastq
+
+# Download multiple samples from a study
+for acc in SRR####### SRR####### SRR#######; do
     fasterq-dump $acc
-done</code></pre>
+done
 
-                    <h4>Option 2: Pre-subsampled Data</h4>
-                    <p>To save time and bandwidth, we'll provide <strong>subsampled FASTQ files</strong> (first 500,000 reads from each sample) via Google Drive link:</p>
-                    <p><strong>Download link:</strong> [WILL BE PROVIDED ON JAN 21, 2026]</p>
-                    
-                    <pre><code># Download from Google Drive
-wget "GDRIVE_LINK_HERE" -O biohack_challenge1_data.tar.gz
+# Compress files to save space
+gzip *.fastq</code></pre>
 
-# Extract
-tar -xzf biohack_challenge1_data.tar.gz
+                    <h4>Alternative: European Nucleotide Archive (ENA)</h4>
+                    <p>Sometimes faster for downloads: <a href="https://www.ebi.ac.uk/ena/browser/" target="_blank">https://www.ebi.ac.uk/ena/browser/</a></p>
 
-# You should see:
-# sample1_R1.fastq.gz  sample1_R2.fastq.gz
-# sample2_R1.fastq.gz  sample2_R2.fastq.gz
-# sample3_R1.fastq.gz  sample3_R2.fastq.gz</code></pre>
+                    <h4>Working with Large Files</h4>
+                    <pre><code># If files are too large, subsample to ~500K-1M reads
+# Install seqtk
+conda install -c bioconda seqtk
+
+# Subsample paired-end data
+seqtk sample -s100 SRR#######_1.fastq 500000 > sample1_R1.fastq
+seqtk sample -s100 SRR#######_2.fastq 500000 > sample1_R2.fastq
+
+# Compress
+gzip sample1_*.fastq</code></pre>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Expected Issues in This Dataset</h3>
-                    <p>This dataset intentionally contains quality problems you need to identify. Common issues might include:</p>
+                    <h3>⚠️ What to Look For in a Dataset</h3>
+                    <p>You want a dataset with <strong>quality problems</strong> to investigate! Look for:</p>
+                    <ul>
+                        <li><strong>Older datasets (2015-2019)</strong> - Earlier sequencing technology often has more issues</li>
+                        <li><strong>Pilot studies</strong> - May have library prep optimization problems</li>
+                        <li><strong>Studies mentioning technical challenges</strong> - Check the abstract/methods</li>
+                        <li><strong>Avoid "benchmark" datasets</strong> - These are usually pristine</li>
+                    </ul>
+                    
+                    <p><strong>Common quality issues you might find:</strong></p>
                     <ul>
                         <li>Adapter contamination</li>
-                        <li>Low quality regions</li>
-                        <li>Sequence duplication</li>
-                        <li>Possible PhiX spike-in contamination</li>
+                        <li>Low quality regions at read ends</li>
+                        <li>High sequence duplication (PCR bias)</li>
+                        <li>Overrepresented sequences</li>
+                        <li>PhiX spike-in contamination</li>
                         <li>Variable quality across samples</li>
                     </ul>
+                    
                     <p><strong>Your job:</strong> Figure out exactly what's wrong and how severe it is!</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📝 Document Your Dataset Choice</h3>
+                    <p>In your final report, include a section explaining:</p>
+                    <ul>
+                        <li><strong>SRA/ENA accessions</strong> you selected</li>
+                        <li><strong>Why you chose this dataset</strong> (biological relevance, suspected quality issues)</li>
+                        <li><strong>BioProject/BioSample information</strong></li>
+                        <li><strong>Original study citation</strong> (if published)</li>
+                        <li><strong>Download commands</strong> used</li>
+                    </ul>
+                    <p><strong>Bonus:</strong> Well-documented dataset selection earns extra points!</p>
                 </div>
             </div>
 
@@ -285,12 +322,16 @@ conda install -c bioconda kraken2</code></pre>
                 <h2>🗄️ Reference Databases Needed</h2>
                 
                 <div class="success-box">
-                    <h3>E. coli Reference Genome</h3>
-                    <pre><code># Download from NCBI
+                    <h3>Bacterial Reference Genome</h3>
+                    <p>Download the reference genome for your chosen organism:</p>
+                    <pre><code># Example for E. coli K-12
 wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/005/845/GCF_000005845.2_ASM584v2/GCF_000005845.2_ASM584v2_genomic.fna.gz
 
 # Unzip
-gunzip GCF_000005845.2_ASM584v2_genomic.fna.gz</code></pre>
+gunzip GCF_000005845.2_ASM584v2_genomic.fna.gz
+
+# For other organisms, search NCBI Genome database:
+# https://www.ncbi.nlm.nih.gov/genome/</code></pre>
                 </div>
 
                 <div class="success-box">
@@ -354,7 +395,7 @@ $CONDA_PREFIX/share/trimmomatic/adapters/TruSeq3-PE.fa
                     <li><strong>Check adapter position:</strong> Where do adapters appear in reads?</li>
                     <li><strong>Examine quality drop-off:</strong> Is it gradual or sudden?</li>
                     <li><strong>Identify overrepresented sequences:</strong> BLAST them to find what they are</li>
-                    <li><strong>Look at GC content:</strong> Does it match expected E. coli GC (~50%)?</li>
+                    <li><strong>Look at GC content:</strong> Does it match expected bacterial GC content?</li>
                     <li><strong>Check duplication:</strong> High duplication might indicate PCR bias</li>
                 </ul>
             </div>
@@ -372,7 +413,7 @@ $CONDA_PREFIX/share/trimmomatic/adapters/TruSeq3-PE.fa
             </div>
 
             <div class="content-section">
-                <h2>📝 Submission Requirements</h2>
+                <h2>📁 Submission Requirements</h2>
                 
                 <h3>GitHub Repository Structure</h3>
                 <pre><code>challenge1-qc-detective/
@@ -391,31 +432,8 @@ $CONDA_PREFIX/share/trimmomatic/adapters/TruSeq3-PE.fa
 ├── report/
 │   └── diagnosis_report.pdf
 └── presentation/
-    └── slides.pdf               # 2-slide presentation</code></pre>
+    └── slides.pdf               # slide presentation</code></pre>
 
-                <div class="warning-box">
-                    <h3>⚠️ Mandatory README Badge</h3>
-                    <pre><code># 🧬 GBBA BioHack 2026 Submission
-
-**Team Name:** [Your Team Name]
-**Challenge:** Challenge 1 - Sequence Quality Detective
-
----
-
-### 📢 Event Information
-This project was developed for **GBBA BioHack 2026**.
-
-**Stay Connected:**
-- 📸 Instagram: [@gbba_northeastern](https://instagram.com/gbba_northeastern)
-- 💼 LinkedIn: [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)
-
-> ⚠️ Following GBBA on Instagram and LinkedIn is **mandatory for evaluation**.
-
----
-
-## Project Overview
-[Your summary here]</code></pre>
-                </div>
             </div>
 
             <div class="content-section">
