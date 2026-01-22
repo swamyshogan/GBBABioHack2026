@@ -16,7 +16,7 @@
                 </div>
                 <div class="event-details">
                     <h3>January 22-23, 2026</h3>
-                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back</a></p>
+                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
                 </div>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <span class="difficulty intermediate">🟠 Intermediate</span>
             <h1>📊 Challenge 3: Differential Expression Storyteller</h1>
             <div class="challenge-meta">
-                <div class="meta-item"><span>⏱️ 5-6 hours</span></div>
-                <div class="meta-item"><span>👥 2-4 people</span></div>
-                <div class="meta-item"><span>🏆 100 points</span></div>
+                <div class="meta-item"><span>⏱️ Time: 5-6 hours</span></div>
+                <div class="meta-item"><span>👥 Team: 2-4 people</span></div>
+                <div class="meta-item"><span>🏆 Points: 100</span></div>
             </div>
         </div>
     </section>
@@ -45,57 +45,167 @@
 
             <div class="info-box">
                 <h3>The Experiment</h3>
-                <p><strong>Cell Line:</strong> Human cancer cells (breast or lung)</p>
-                <p><strong>Treatment:</strong> Novel therapeutic compound vs. vehicle control</p>
-                <p><strong>Time Point:</strong> 24 hours post-treatment</p>
-                <p><strong>Replicates:</strong> 3 control, 3 treated</p>
+                <p><strong>Cell Line:</strong> Human cancer cells (breast, lung, or other)</p>
+                <p><strong>Treatment:</strong> Therapeutic compound vs. vehicle control</p>
+                <p><strong>Time Point:</strong> Post-treatment (typically 24-48 hours)</p>
+                <p><strong>Replicates:</strong> At least 3 control, 3 treated</p>
                 <p><strong>Your Job:</strong> What is this drug doing to the cells?</p>
             </div>
 
             <div class="content-section">
-                <h2>📥 Dataset - Public RNA-seq from GEO</h2>
+                <h2>📥 Finding Your Dataset</h2>
                 
-                <div class="success-box">
-                    <h3>Option 1: Download from GEO (Gene Expression Omnibus)</h3>
-                    <p>Use a real published dataset:</p>
-                    <ul>
-                        <li><strong>Example GEO Series:</strong> GSE183947 (breast cancer drug treatment)</li>
-                        <li><strong>Data Type:</strong> Pre-computed count matrix</li>
-                        <li><strong>Format:</strong> Tab-delimited text file</li>
-                    </ul>
-                    
-                    <pre><code># Download from GEO using R
-library(GEOquery)
-gse <- getGEO("GSE183947")
-counts <- exprs(gse[[1]])
-
-# Or download directly from GEO website:
-# https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE183947</code></pre>
+                <div class="info-box">
+                    <h3>🎯 Your First Task: Dataset Selection</h3>
+                    <p>You'll search public repositories for RNA-seq data from a cancer drug treatment study. This tests your ability to find, evaluate, and work with real transcriptomic data.</p>
                 </div>
 
                 <div class="success-box">
-                    <h3>Option 2: Use TCGA Data</h3>
+                    <h3>Dataset Requirements</h3>
+                    <p>Find a dataset that meets these criteria:</p>
+                    <ul>
+                        <li><strong>Data Type:</strong> RNA-seq gene expression data</li>
+                        <li><strong>Format:</strong> Count matrix or normalized expression values</li>
+                        <li><strong>Experiment Design:</strong> Treatment vs. Control comparison</li>
+                        <li><strong>Replicates:</strong> At least 3 biological replicates per condition</li>
+                        <li><strong>Organism:</strong> Human (Homo sapiens) preferred</li>
+                        <li><strong>Context:</strong> Cancer cell lines with drug treatment</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🔍 Where to Search for RNA-seq Data</h3>
+                    
+                    <h4>Option 1: GEO (Gene Expression Omnibus)</h4>
+                    <p>Primary repository for gene expression data: <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">https://www.ncbi.nlm.nih.gov/geo/</a></p>
+                    
+                    <p><strong>Search strategies:</strong></p>
+                    <ul>
+                        <li>"RNA-seq" AND "cancer" AND "drug treatment"</li>
+                        <li>"breast cancer" AND "chemotherapy" AND "RNA-seq"</li>
+                        <li>"drug response" AND "transcriptome"</li>
+                        <li>Filter by: Organism = Homo sapiens, Study type = Expression profiling by high throughput sequencing</li>
+                    </ul>
+
+                    <p><strong>Good dataset examples to search for:</strong></p>
+                    <ul>
+                        <li>GSE183947 - Breast cancer drug treatment</li>
+                        <li>GSE164174 - Drug resistance in cancer</li>
+                        <li>GSE149215 - Targeted therapy response</li>
+                    </ul>
+
+                    <pre><code># Download from GEO using R
+library(GEOquery)
+
+# Download series
+gse <- getGEO("GSE######")  # Replace with your GSE ID
+
+# Extract expression data
+expr_data <- exprs(gse[[1]])
+
+# Get sample information
+sample_info <- pData(phenoData(gse[[1]]))
+
+# Or download manually from GEO website
+# Look for "Series Matrix File(s)" on the GEO page</code></pre>
+
+                    <h4>Option 2: TCGA (The Cancer Genome Atlas)</h4>
+                    <p>Large-scale cancer genomics data: <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></p>
+                    
                     <pre><code># Download using TCGAbiolinks
 library(TCGAbiolinks)
+library(SummarizedExperiment)
+
+# Query for RNA-seq data
 query <- GDCquery(
-    project = "TCGA-BRCA",
+    project = "TCGA-BRCA",  # Or TCGA-LUAD, TCGA-COAD, etc.
     data.category = "Transcriptome Profiling",
     data.type = "Gene Expression Quantification",
     workflow.type = "STAR - Counts"
 )
+
+# Download
 GDCdownload(query)
-data <- GDCprepare(query)</code></pre>
+data <- GDCprepare(query)
+
+# Extract count matrix
+counts <- assay(data)</code></pre>
+
+                    <p><strong>Note:</strong> TCGA data is organized by tumor vs. normal, not drug treatment. You'll need to select samples based on clinical data.</p>
+
+                    <h4>Option 3: ArrayExpress</h4>
+                    <p>European repository: <a href="https://www.ebi.ac.uk/biostudies/arrayexpress" target="_blank">https://www.ebi.ac.uk/biostudies/arrayexpress</a></p>
+
+                    <h4>Option 4: recount3</h4>
+                    <p>Uniformly processed RNA-seq data: <a href="https://rna.recount.bio/" target="_blank">https://rna.recount.bio/</a></p>
+                    
+                    <pre><code># Use recount3 for easy access
+library(recount3)
+
+# Find available projects
+human_projects <- available_projects()
+
+# Download a project
+rse <- create_rse_manual(
+    project = "SRP######",
+    project_home = "data_sources/sra"
+)</code></pre>
                 </div>
 
                 <div class="info-box">
-                    <h3>We'll Provide</h3>
-                    <p>To save time, we'll provide a <strong>cleaned count matrix</strong> ready for analysis:</p>
+                    <h3>⚡ What Makes a Good Challenge Dataset?</h3>
+                    <p>Look for datasets with these features:</p>
                     <ul>
-                        <li>6 samples × ~20,000 genes</li>
-                        <li>Sample metadata (control vs. treated)</li>
-                        <li>Gene annotations (ENSEMBL IDs mapped to symbols)</li>
+                        <li><strong>Clear experimental design:</strong> Well-defined treatment and control groups</li>
+                        <li><strong>Good sample size:</strong> At least 3 replicates per condition (more is better)</li>
+                        <li><strong>Published studies:</strong> Check if there's an associated publication for context</li>
+                        <li><strong>Available count data:</strong> Raw or normalized counts, not just processed results</li>
+                        <li><strong>Interesting biology:</strong> Novel drugs, targeted therapies, or known mechanisms</li>
                     </ul>
-                    <p><strong>Download:</strong> [Google Drive link - provided Jan 21]</p>
+                    
+                    <p><strong>Avoid:</strong></p>
+                    <ul>
+                        <li>Single-cell RNA-seq (different analysis methods)</li>
+                        <li>Time-series with many time points (too complex)</li>
+                        <li>Datasets with only processed data (no count matrix)</li>
+                        <li>Experiments with confounded designs</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h3>📝 Document Your Dataset</h3>
+                    <p>In your final report, include:</p>
+                    <ul>
+                        <li><strong>GEO/SRA accession:</strong> GSE###### or SRP######</li>
+                        <li><strong>Study title and authors:</strong> What was the original research?</li>
+                        <li><strong>Experimental design:</strong> What treatment? What cancer type?</li>
+                        <li><strong>Sample information:</strong> How many replicates? What conditions?</li>
+                        <li><strong>Data format:</strong> Count matrix? Normalized? What units?</li>
+                        <li><strong>Download method:</strong> Commands or tools used</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔧 Data Preparation Tips</h3>
+                    <pre><code># If you get raw counts (from GEO or TCGA)
+# Make sure data is formatted correctly:
+
+# Counts should be:
+# - Rows = genes
+# - Columns = samples
+# - Integer counts (not normalized)
+
+# Create metadata file
+metadata <- data.frame(
+    sample = colnames(counts),
+    condition = c("control", "control", "control", 
+                  "treated", "treated", "treated"),
+    batch = c(1, 1, 2, 1, 2, 2)  # if applicable
+)
+
+# Save for analysis
+write.table(counts, "counts.txt", sep="\t", quote=FALSE)
+write.table(metadata, "metadata.txt", sep="\t", quote=FALSE, row.names=FALSE)</code></pre>
                 </div>
             </div>
 
@@ -133,6 +243,14 @@ library(pheatmap)
 sampleDists <- dist(t(assay(vsd)))
 pheatmap(as.matrix(sampleDists))</code></pre>
 
+                <h4>Required QC Checks:</h4>
+                <ul>
+                    <li>Library size distribution across samples</li>
+                    <li>Sample clustering (PCA or MDS)</li>
+                    <li>Sample-to-sample correlations</li>
+                    <li>Detection of outliers or batch effects</li>
+                </ul>
+
                 <h3>2. Differential Expression Analysis (30 points)</h3>
                 <pre><code># Run DESeq2
 dds <- DESeq(dds)
@@ -147,14 +265,17 @@ down_genes <- subset(sig_genes, log2FoldChange < -1)
 
 # Summary statistics
 summary(res)
-table(sig_genes$log2FoldChange > 0)</code></pre>
+table(sig_genes$log2FoldChange > 0)
+
+# Top genes
+top_genes <- head(sig_genes[order(sig_genes$padj),], 20)</code></pre>
 
                 <h4>Required Visualizations:</h4>
                 <ul>
                     <li><strong>Volcano Plot:</strong> Show all genes, highlight significant</li>
                     <li><strong>MA Plot:</strong> Log2FC vs. mean expression</li>
-                    <li><strong>Heatmap:</strong> Top 50 DE genes</li>
-                    <li><strong>PCA:</strong> Sample clustering</li>
+                    <li><strong>Heatmap:</strong> Top 50 differentially expressed genes</li>
+                    <li><strong>Box plots:</strong> Expression of key genes across conditions</li>
                 </ul>
 
                 <h3>3. Pathway Enrichment Analysis (30 points)</h3>
@@ -172,21 +293,31 @@ go_up <- enrichGO(gene = up_entrez$ENTREZID,
                   ont = "BP",
                   pvalueCutoff = 0.05)
 
+go_down <- enrichGO(gene = down_entrez$ENTREZID,
+                    OrgDb = org.Hs.eg.db,
+                    ont = "BP",
+                    pvalueCutoff = 0.05)
+
 # KEGG Pathway
 kegg_up <- enrichKEGG(gene = up_entrez$ENTREZID,
                       organism = 'hsa',
                       pvalueCutoff = 0.05)
 
-# Dot plot
+# Visualize
 dotplot(go_up, showCategory=20)
-dotplot(kegg_up)</code></pre>
+dotplot(kegg_up, showCategory=15)
+
+# Optional: Reactome
+library(ReactomePA)
+reactome <- enrichPathway(gene = up_entrez$ENTREZID,
+                         pvalueCutoff = 0.05)</code></pre>
 
                 <h4>Required Analyses:</h4>
                 <ul>
-                    <li>GO Enrichment (up-regulated genes)</li>
-                    <li>GO Enrichment (down-regulated genes)</li>
+                    <li>GO Enrichment (Biological Process) for up-regulated genes</li>
+                    <li>GO Enrichment (Biological Process) for down-regulated genes</li>
                     <li>KEGG Pathway enrichment</li>
-                    <li>Reactome pathway analysis (optional)</li>
+                    <li>Create dot plots or bar plots for top enriched terms</li>
                 </ul>
 
                 <h3>4. The Biological Story (20 points)</h3>
@@ -203,12 +334,13 @@ dotplot(kegg_up)</code></pre>
                 <ul>
                     <li>What pathways are down-regulated?</li>
                     <li>Is this expected? (e.g., cell cycle arrest in cancer treatment)</li>
+                    <li>Any tumor suppressor genes affected?</li>
                 </ul>
 
                 <h4>C. Clinical Implications</h4>
                 <ul>
                     <li>Is the drug hitting its intended target?</li>
-                    <li>Any unexpected effects?</li>
+                    <li>Any unexpected effects or off-target activity?</li>
                     <li>Potential resistance mechanisms?</li>
                     <li>Biomarkers for patient selection?</li>
                 </ul>
@@ -219,69 +351,152 @@ dotplot(kegg_up)</code></pre>
 
             <div class="content-section">
                 <h2>🗄️ Databases & Resources</h2>
-                <ul>
-                    <li><strong>GEO:</strong> <a href="https://www.ncbi.nlm.nih.gov/geo/">https://www.ncbi.nlm.nih.gov/geo/</a></li>
-                    <li><strong>GO:</strong> <a href="http://geneontology.org/">http://geneontology.org/</a></li>
-                    <li><strong>KEGG:</strong> <a href="https://www.genome.jp/kegg/">https://www.genome.jp/kegg/</a></li>
-                    <li><strong>Reactome:</strong> <a href="https://reactome.org/">https://reactome.org/</a></li>
-                    <li><strong>STRING:</strong> <a href="https://string-db.org/">https://string-db.org/</a></li>
-                </ul>
-                <p>Full list: <a href="../databases.html">Database Resources</a></p>
+                
+                <div class="info-box">
+                    <h3>Data Repositories</h3>
+                    <ul>
+                        <li><strong>GEO:</strong> <a href="https://www.ncbi.nlm.nih.gov/geo/" target="_blank">https://www.ncbi.nlm.nih.gov/geo/</a></li>
+                        <li><strong>TCGA:</strong> <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></li>
+                        <li><strong>ArrayExpress:</strong> <a href="https://www.ebi.ac.uk/biostudies/arrayexpress" target="_blank">https://www.ebi.ac.uk/biostudies/arrayexpress</a></li>
+                        <li><strong>recount3:</strong> <a href="https://rna.recount.bio/" target="_blank">https://rna.recount.bio/</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Pathway Databases</h3>
+                    <ul>
+                        <li><strong>GO:</strong> <a href="http://geneontology.org/" target="_blank">http://geneontology.org/</a></li>
+                        <li><strong>KEGG:</strong> <a href="https://www.genome.jp/kegg/" target="_blank">https://www.genome.jp/kegg/</a></li>
+                        <li><strong>Reactome:</strong> <a href="https://reactome.org/" target="_blank">https://reactome.org/</a></li>
+                        <li><strong>MSigDB:</strong> <a href="https://www.gsea-msigdb.org/" target="_blank">https://www.gsea-msigdb.org/</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Additional Resources</h3>
+                    <ul>
+                        <li><strong>STRING:</strong> <a href="https://string-db.org/" target="_blank">https://string-db.org/</a> (Protein interactions)</li>
+                        <li><strong>GeneCodis:</strong> <a href="http://genecodis.cnb.csic.es/" target="_blank">http://genecodis.cnb.csic.es/</a></li>
+                        <li><strong>Enrichr:</strong> <a href="https://maayanlab.cloud/Enrichr/" target="_blank">https://maayanlab.cloud/Enrichr/</a></li>
+                    </ul>
+                </div>
+
+                <p>Full database list: <a href="../databases.html">Databases & Resources</a></p>
             </div>
 
             <div class="content-section">
                 <h2>🛠️ Required Tools</h2>
-                <pre><code># R packages
+                
+                <div class="info-box">
+                    <h3>R Packages Installation</h3>
+                    <pre><code># Install Bioconductor
 install.packages("BiocManager")
-BiocManager::install(c("DESeq2", "clusterProfiler", 
-                       "org.Hs.eg.db", "ggplot2", 
-                       "pheatmap", "EnhancedVolcano"))</code></pre>
+
+# Core analysis packages
+BiocManager::install(c(
+    "DESeq2",           # Differential expression
+    "clusterProfiler",  # Pathway enrichment
+    "org.Hs.eg.db",     # Human gene annotations
+    "GEOquery",         # Download GEO data
+    "TCGAbiolinks",     # TCGA data access
+    "recount3"          # Recount3 data access
+))
+
+# Visualization packages
+install.packages(c("ggplot2", "pheatmap", "ggrepel"))
+BiocManager::install(c(
+    "EnhancedVolcano",  # Better volcano plots
+    "ComplexHeatmap"    # Advanced heatmaps
+))
+
+# Optional: Additional pathway databases
+BiocManager::install(c(
+    "ReactomePA",       # Reactome pathways
+    "DOSE"              # Disease ontology
+))</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>Alternative: Python Tools</h3>
+                    <pre><code># If you prefer Python
+pip install scanpy
+pip install pydeseq2
+pip install gseapy
+pip install matplotlib seaborn</code></pre>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 Analysis Strategy Tips</h3>
+                <ol>
+                    <li><strong>Start with QC:</strong> Ensure samples cluster by condition, not batch</li>
+                    <li><strong>Set reasonable thresholds:</strong> padj < 0.05 and |log2FC| > 1 is standard</li>
+                    <li><strong>Consider effect size:</strong> High log2FC variants are more biologically meaningful</li>
+                    <li><strong>Look for coherent pathways:</strong> Multiple genes in same pathway = stronger signal</li>
+                    <li><strong>Read the original paper:</strong> Compare your findings to published results</li>
+                    <li><strong>Think mechanistically:</strong> Connect pathways to known drug mechanisms</li>
+                </ol>
             </div>
 
             <div class="content-section">
                 <h2>📊 Grading Rubric</h2>
                 <table>
-                    <tr><th>Criteria</th><th>Points</th></tr>
-                    <tr><td>QC & Exploratory Analysis</td><td>20</td></tr>
-                    <tr><td>DE Analysis</td><td>30</td></tr>
-                    <tr><td>Pathway Enrichment</td><td>30</td></tr>
-                    <tr><td>Biological Story</td><td>20</td></tr>
-                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td></tr>
+                    <tr><th>Criteria</th><th>Points</th><th>What We're Looking For</th></tr>
+                    <tr><td>QC & Exploratory Analysis</td><td>20</td><td>Thorough quality checks, clear visualizations</td></tr>
+                    <tr><td>Differential Expression</td><td>30</td><td>Correct analysis, well-annotated results</td></tr>
+                    <tr><td>Pathway Enrichment</td><td>30</td><td>Multiple databases, clear interpretation</td></tr>
+                    <tr><td>Biological Story</td><td>20</td><td>Coherent narrative, clinical insights</td></tr>
+                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td><td>Novel analyses, interactive tools</td></tr>
                 </table>
             </div>
 
             <div class="content-section">
-                <h2>🎨 Creativity Bonus</h2>
+                <h2>🎨 Creativity Bonus Ideas</h2>
                 <ul>
-                    <li>🌟 Interactive Shiny app for exploring results</li>
-                    <li>🌟 Network visualization of gene interactions</li>
-                    <li>🌟 GSEA analysis instead of standard enrichment</li>
-                    <li>🌟 Integration with TCGA for validation</li>
-                    <li>🌟 Drug repurposing suggestions based on signatures</li>
+                    <li>🌟 <strong>Interactive Shiny app:</strong> Explore results with dynamic plots</li>
+                    <li>🌟 <strong>Network visualization:</strong> Gene-gene or gene-pathway networks</li>
+                    <li>🌟 <strong>GSEA analysis:</strong> Gene Set Enrichment Analysis instead of over-representation</li>
+                    <li>🌟 <strong>Drug repurposing:</strong> Connect signature to drug databases (CMap, LINCS)</li>
+                    <li>🌟 <strong>Integration with TCGA:</strong> Compare to patient tumor data</li>
+                    <li>🌟 <strong>Machine learning:</strong> Build classifier based on gene expression</li>
                 </ul>
             </div>
 
-            <div class="warning-box">
-                <h3>⚠️ README Badge Required</h3>
-                <pre><code># 🧬 GBBA BioHack 2026
-
-**Team:** [Name]
-**Challenge:** 3 - Differential Expression
-
-📢 [@gbba_northeastern](https://instagram.com/gbba_northeastern)
-💼 [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)</code></pre>
+            <div class="content-section">
+                <h2>📁 Submission Requirements</h2>
+                
+                <h3>GitHub Repository Structure</h3>
+                <pre><code>challenge3-rnaseq-storyteller/
+├── README.md
+├── data/
+│   ├── dataset_information.md
+│   ├── counts.txt
+│   └── metadata.txt
+├── scripts/
+│   ├── 01_download_data.R
+│   ├── 02_qc_analysis.R
+│   ├── 03_differential_expression.R
+│   └── 04_pathway_enrichment.R
+├── results/
+│   ├── de_genes.csv
+│   ├── enrichment_results/
+│   └── figures/
+├── report/
+│   └── biological_story.pdf
+└── presentation/
+    └── slides.pdf</code></pre>
             </div>
 
             <div style="text-align: center; margin: 3rem 0;">
-                <a href="../databases.html" class="btn btn-secondary">Databases</a>
-                <a href="../index.html#challenges" class="btn btn-primary">Back</a>
+                <a href="../databases.html" class="btn btn-secondary">Database Resources</a>
+                <a href="../index.html#challenges" class="btn btn-primary">Back to Challenges</a>
             </div>
         </div>
     </section>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 GBBA - Northeastern University</p>
+            <p>&copy; 2026 Graduate Biotechnology Business Association (GBBA) - Northeastern University</p>
         </div>
     </footer>
 </body>
