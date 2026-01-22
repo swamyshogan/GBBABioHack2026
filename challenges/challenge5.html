@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenge 4: Multi-Omics Integration | GBBA BioHack 2026</title>
+    <title>Challenge 5: Build Your Pipeline | GBBA BioHack 2026</title>
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -25,10 +25,10 @@
     <section class="challenge-header">
         <div class="container">
             <span class="difficulty advanced">🔴 Advanced</span>
-            <h1>🔬 Challenge 4: Multi-Omics Integration</h1>
+            <h1>⚙️ Challenge 5: Build a Production Pipeline</h1>
             <div class="challenge-meta">
                 <div class="meta-item"><span>⏱️ Time: 7-8 hours</span></div>
-                <div class="meta-item"><span>👥 Team: 3-5 people</span></div>
+                <div class="meta-item"><span>👥 Team: 2-4 people</span></div>
                 <div class="meta-item"><span>🏆 Points: 100</span></div>
             </div>
         </div>
@@ -40,196 +40,189 @@
 
             <div class="content-section">
                 <h2>🎯 Challenge Overview</h2>
-                <p>Integrate genomic and transcriptomic data from TCGA to identify cancer subtypes and predict treatment response. Use real public data to discover molecular patterns that could guide precision oncology.</p>
+                <p>Build a <strong>production-ready, automated bioinformatics pipeline</strong> that solves a real analysis problem. Your pipeline should be reproducible, well-documented, and easy for others to use. This is your chance to create something that could actually be deployed in a research or clinical setting.</p>
             </div>
 
             <div class="info-box">
-                <h3>The Mission</h3>
-                <p><strong>Goal:</strong> Identify molecular subtypes of cancer using multi-omics integration</p>
-                <p><strong>Data:</strong> Mutation + Expression data from TCGA</p>
-                <p><strong>Patients:</strong> ~50-100 cancer samples</p>
-                <p><strong>Deliverable:</strong> Subtype classification with clinical relevance</p>
+                <h3>What Makes a Great Pipeline?</h3>
+                <p>A production pipeline should be:</p>
+                <ul>
+                    <li>✅ <strong>Automated</strong> - Runs from start to finish with minimal manual intervention</li>
+                    <li>✅ <strong>Reproducible</strong> - Same inputs always produce same outputs</li>
+                    <li>✅ <strong>Portable</strong> - Works on different systems and platforms</li>
+                    <li>✅ <strong>Well-documented</strong> - Anyone can understand and use it</li>
+                    <li>✅ <strong>Error-handling</strong> - Fails gracefully with clear error messages</li>
+                    <li>✅ <strong>Scalable</strong> - Can handle different dataset sizes</li>
+                </ul>
             </div>
 
             <div class="content-section">
-                <h2>📥 Finding Your Multi-Omics Dataset</h2>
+                <h2>🎨 Pipeline Ideas</h2>
                 
-                <div class="info-box">
-                    <h3>🎯 Your First Task: Multi-Omics Data Acquisition</h3>
-                    <p>You'll access multiple data types (genomics + transcriptomics) from the same patient cohort. This tests your ability to work with integrated cancer genomics data at scale.</p>
-                </div>
-
                 <div class="success-box">
-                    <h3>Dataset Requirements</h3>
-                    <p>Find a dataset that meets these criteria:</p>
-                    <ul>
-                        <li><strong>Data Types:</strong> At least 2 omics layers (mutations + gene expression required)</li>
-                        <li><strong>Source:</strong> TCGA (preferred) or other cancer genomics projects</li>
-                        <li><strong>Cancer Type:</strong> Any solid tumor (breast, lung, colorectal, etc.)</li>
-                        <li><strong>Sample Size:</strong> 50-200 patients (more manageable for hackathon)</li>
-                        <li><strong>Clinical Data:</strong> Survival, stage, or treatment information available</li>
-                    </ul>
-                </div>
-
-                <div class="warning-box">
-                    <h3>🔍 Where to Access Multi-Omics Data</h3>
-                    
-                    <h4>Option 1: TCGA via GDC Data Portal (Recommended)</h4>
-                    <p>The Cancer Genome Atlas: <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></p>
-                    
-                    <p><strong>Recommended cancer types for this challenge:</strong></p>
-                    <ul>
-                        <li><strong>TCGA-BRCA</strong> - Breast Invasive Carcinoma (~1000 samples, well-studied)</li>
-                        <li><strong>TCGA-LUAD</strong> - Lung Adenocarcinoma (~500 samples)</li>
-                        <li><strong>TCGA-COAD</strong> - Colon Adenocarcinoma (~400 samples)</li>
-                        <li><strong>TCGA-OV</strong> - Ovarian Serous Cystadenocarcinoma (~400 samples)</li>
-                    </ul>
-
-                    <pre><code>library(TCGAbiolinks)
-library(SummarizedExperiment)
-
-# Download mutation data
-query_mut <- GDCquery(
-    project = "TCGA-BRCA",  # Change to your cancer type
-    data.category = "Simple Nucleotide Variation",
-    data.type = "Masked Somatic Mutation",
-    access = "open"
-)
-GDCdownload(query_mut)
-mutations <- GDCprepare(query_mut)
-
-# Download gene expression data
-query_exp <- GDCquery(
-    project = "TCGA-BRCA",
-    data.category = "Transcriptome Profiling",
-    data.type = "Gene Expression Quantification",
-    workflow.type = "STAR - Counts"
-)
-GDCdownload(query_exp)
-expression <- GDCprepare(query_exp)
-
-# Extract count matrix
-expr_matrix <- assay(expression)
-
-# Get clinical data
-clinical <- GDCquery_clinic(project = "TCGA-BRCA", type = "clinical")</code></pre>
-
-                    <h4>Option 2: cBioPortal (User-Friendly Interface)</h4>
-                    <p>Pre-processed, harmonized data: <a href="https://www.cbioportal.org/" target="_blank">https://www.cbioportal.org/</a></p>
-                    
-                    <p><strong>Steps to download:</strong></p>
-                    <ol>
-                        <li>Go to cBioPortal.org</li>
-                        <li>Select a study (e.g., "Breast Invasive Carcinoma (TCGA, PanCancer Atlas)")</li>
-                        <li>Click "Explore Selected Studies"</li>
-                        <li>Download data:
-                            <ul>
-                                <li>Mutations: Go to "Mutations" tab → "Download" → MAF format</li>
-                                <li>Expression: Go to "Download" → "mRNA Expression (RNA Seq V2 RSEM)"</li>
-                                <li>Clinical: Go to "Download" → "Clinical Data"</li>
-                            </ul>
-                        </li>
-                    </ol>
-
-                    <h4>Option 3: Xena Browser</h4>
-                    <p>UCSC Xena for TCGA data: <a href="https://xenabrowser.net/" target="_blank">https://xenabrowser.net/</a></p>
-                    
-                    <pre><code># Download via Xena Browser interface or use R package
-# install.packages("UCSCXenaTools")
-library(UCSCXenaTools)
-
-# Find datasets
-datasets <- XenaData %>% 
-    filter(XenaHostNames == "tcgaHub") %>%
-    filter(XenaCohorts == "TCGA Breast Cancer (BRCA)")
-
-# Download mutation and expression data
-# Follow package documentation for specific queries</code></pre>
+                    <h3>Choose Your Adventure</h3>
+                    <p>Select ONE pipeline type to build. Pick something that interests your team and matches your skill level:</p>
                 </div>
 
                 <div class="info-box">
-                    <h3>⚡ Data Preparation Strategy</h3>
-                    
-                    <h4>1. Mutation Data Preparation</h4>
-                    <pre><code>library(maftools)
-
-# If you downloaded MAF from cBioPortal or TCGA
-maf <- read.maf("mutations.maf")
-
-# Key features to extract:
-# - Mutation burden per sample
-# - Driver gene mutations (TP53, PIK3CA, KRAS, etc.)
-# - Mutation types (missense, nonsense, frameshift)
-# - Oncogenic pathway alterations
-
-# Create binary mutation matrix (samples × genes)
-# 1 = mutated, 0 = wild-type
-oncomat <- createOncoMatrix(maf)
-mut_matrix <- oncomat$oncoMatrix</code></pre>
-
-                    <h4>2. Expression Data Preparation</h4>
-                    <pre><code>library(DESeq2)
-
-# If you have raw counts from TCGA
-# Normalize and transform
-dds <- DESeqDataSetFromMatrix(
-    countData = expr_matrix,
-    colData = clinical_subset,
-    design = ~ 1  # No design for unsupervised analysis
-)
-
-# Variance stabilizing transformation
-vsd <- vst(dds, blind = TRUE)
-expr_normalized <- assay(vsd)
-
-# Select most variable genes (reduces dimensionality)
-gene_vars <- apply(expr_normalized, 1, var)
-top_var_genes <- names(sort(gene_vars, decreasing = TRUE)[1:1000])
-expr_filtered <- expr_normalized[top_var_genes, ]</code></pre>
-
-                    <h4>3. Sample Matching</h4>
-                    <pre><code># CRITICAL: Match samples between datasets
-# TCGA barcodes: TCGA-XX-XXXX-01A-11R-XXXX-XX
-# First 12 characters identify patient
-
-# Extract patient IDs
-mut_patients <- substr(colnames(mut_matrix), 1, 12)
-expr_patients <- substr(colnames(expr_matrix), 1, 12)
-
-# Find common patients
-common_patients <- intersect(mut_patients, expr_patients)
-
-# Subset to common patients
-mut_matrix_matched <- mut_matrix[, mut_patients %in% common_patients]
-expr_matrix_matched <- expr_filtered[, expr_patients %in% common_patients]
-
-# Ensure same order
-expr_matrix_matched <- expr_matrix_matched[, order(colnames(expr_matrix_matched))]
-mut_matrix_matched <- mut_matrix_matched[, order(colnames(mut_matrix_matched))]</code></pre>
+                    <h3>Option 1: RNA-seq Analysis Pipeline</h3>
+                    <p><strong>Goal:</strong> Raw FASTQ → Gene counts + QC report</p>
+                    <p><strong>Key Steps:</strong></p>
+                    <ul>
+                        <li>Quality control (FastQC)</li>
+                        <li>Adapter trimming</li>
+                        <li>Alignment to reference genome</li>
+                        <li>Gene quantification</li>
+                        <li>Quality report generation</li>
+                    </ul>
+                    <p><strong>Good for:</strong> Teams wanting to focus on workflow orchestration</p>
                 </div>
 
-                <div class="success-box">
-                    <h3>📝 Document Your Dataset</h3>
-                    <p>In your final report, include:</p>
+                <div class="info-box">
+                    <h3>Option 2: Variant Calling Pipeline</h3>
+                    <p><strong>Goal:</strong> BAM/FASTQ → Annotated VCF with clinical interpretation</p>
+                    <p><strong>Key Steps:</strong></p>
                     <ul>
-                        <li><strong>TCGA Project ID:</strong> Which cancer type did you analyze?</li>
-                        <li><strong>Sample size:</strong> How many patients with both omics types?</li>
-                        <li><strong>Data types:</strong> Mutations (MAF), Expression (counts/TPM), Clinical variables</li>
-                        <li><strong>Download method:</strong> TCGAbiolinks? cBioPortal? Xena?</li>
-                        <li><strong>Data version/date:</strong> When was data accessed?</li>
-                        <li><strong>Key genes included:</strong> Which driver genes are in your mutation data?</li>
+                        <li>Alignment (if starting from FASTQ)</li>
+                        <li>Variant calling (germline or somatic)</li>
+                        <li>Variant annotation (functional impact, population frequency)</li>
+                        <li>Filtering and prioritization</li>
+                        <li>Clinical report generation</li>
                     </ul>
+                    <p><strong>Good for:</strong> Teams interested in clinical genomics</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Option 3: Metagenomics Classification Pipeline</h3>
+                    <p><strong>Goal:</strong> Shotgun sequencing → Taxonomic composition + visualization</p>
+                    <p><strong>Key Steps:</strong></p>
+                    <ul>
+                        <li>Quality control and host DNA removal</li>
+                        <li>Taxonomic classification (Kraken2, MetaPhlAn)</li>
+                        <li>Abundance estimation</li>
+                        <li>Diversity analysis</li>
+                        <li>Interactive visualization</li>
+                    </ul>
+                    <p><strong>Good for:</strong> Teams wanting to explore microbiome analysis</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Option 4: ChIP-seq Peak Calling Pipeline</h3>
+                    <p><strong>Goal:</strong> ChIP-seq data → Binding sites + motif analysis</p>
+                    <p><strong>Key Steps:</strong></p>
+                    <ul>
+                        <li>Alignment and filtering</li>
+                        <li>Peak calling (MACS2 or similar)</li>
+                        <li>Peak annotation (genomic features)</li>
+                        <li>Motif discovery</li>
+                        <li>Differential binding analysis (optional)</li>
+                    </ul>
+                    <p><strong>Good for:</strong> Teams interested in epigenomics</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Option 5: Single-Cell RNA-seq Pipeline</h3>
+                    <p><strong>Goal:</strong> scRNA-seq data → Cell type clusters + marker genes</p>
+                    <p><strong>Key Steps:</strong></p>
+                    <ul>
+                        <li>Cell barcode demultiplexing</li>
+                        <li>Quality filtering (cell and gene level)</li>
+                        <li>Normalization and feature selection</li>
+                        <li>Dimensionality reduction and clustering</li>
+                        <li>Cell type annotation</li>
+                    </ul>
+                    <p><strong>Good for:</strong> Teams wanting to work with cutting-edge technology</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>Option 6: Multi-Omics Integration Pipeline</h3>
+                    <p><strong>Goal:</strong> Multiple data types → Integrated analysis + insights</p>
+                    <p><strong>Key Steps:</strong></p>
+                    <ul>
+                        <li>Data harmonization (matching samples, formats)</li>
+                        <li>Feature extraction from each omics layer</li>
+                        <li>Integration (concatenation, MOFA, iCluster, etc.)</li>
+                        <li>Subtype discovery or prediction</li>
+                        <li>Cross-omics validation</li>
+                    </ul>
+                    <p><strong>Good for:</strong> Ambitious teams wanting maximum impact</p>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Common Data Challenges</h3>
-                    <p>Watch out for these issues:</p>
+                    <h3>💡 Or Build Your Own!</h3>
+                    <p>Have a different idea? Go for it! Some other possibilities:</p>
                     <ul>
-                        <li><strong>Sample ID mismatches:</strong> TCGA IDs have different suffixes for different data types</li>
-                        <li><strong>Missing data:</strong> Not all patients have all data types</li>
-                        <li><strong>Large file sizes:</strong> TCGA data can be several GB - consider subsetting</li>
-                        <li><strong>Reference genome versions:</strong> Ensure mutations and expression use same genome build</li>
-                        <li><strong>Batch effects:</strong> TCGA data from multiple sequencing centers</li>
+                        <li>ATAC-seq chromatin accessibility pipeline</li>
+                        <li>Whole genome/exome sequencing QC and analysis</li>
+                        <li>Proteomics data processing pipeline</li>
+                        <li>Methylation array analysis pipeline</li>
+                        <li>Long-read sequencing analysis (Oxford Nanopore, PacBio)</li>
+                        <li>Spatial transcriptomics processing</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h2>🛠️ Implementation Approaches</h2>
+                
+                <div class="success-box">
+                    <h3>Workflow Management Systems</h3>
+                    <p>Choose a workflow manager to orchestrate your pipeline:</p>
+                    
+                    <h4>Nextflow (Recommended)</h4>
+                    <ul>
+                        <li><strong>Why:</strong> Modern, portable, great for bioinformatics</li>
+                        <li><strong>Learn from:</strong> <a href="https://www.nextflow.io/docs/latest/" target="_blank">Nextflow Documentation</a></li>
+                        <li><strong>Examples:</strong> <a href="https://github.com/nf-core" target="_blank">nf-core pipelines</a></li>
+                        <li><strong>Key features:</strong> DSL2, containers, cloud-ready</li>
+                    </ul>
+
+                    <h4>Snakemake</h4>
+                    <ul>
+                        <li><strong>Why:</strong> Python-based, readable, academic favorite</li>
+                        <li><strong>Learn from:</strong> <a href="https://snakemake.readthedocs.io/" target="_blank">Snakemake Documentation</a></li>
+                        <li><strong>Examples:</strong> <a href="https://github.com/snakemake-workflows" target="_blank">Snakemake Workflows</a></li>
+                        <li><strong>Key features:</strong> Python integration, conda support</li>
+                    </ul>
+
+                    <h4>WDL (Workflow Description Language)</h4>
+                    <ul>
+                        <li><strong>Why:</strong> Used by Broad Institute, Terra platform</li>
+                        <li><strong>Learn from:</strong> <a href="https://github.com/openwdl/wdl" target="_blank">WDL Specifications</a></li>
+                        <li><strong>Key features:</strong> Cloud-native, strongly typed</li>
+                    </ul>
+
+                    <h4>Bash/Python Scripts (Not Recommended)</h4>
+                    <ul>
+                        <li><strong>Only if:</strong> You have a good reason and know what you're doing</li>
+                        <li><strong>Must include:</strong> Error handling, logging, restart capability</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Containerization Strategy</h3>
+                    <p>Make your pipeline reproducible with containers:</p>
+                    
+                    <h4>Docker</h4>
+                    <ul>
+                        <li>Most popular, widely supported</li>
+                        <li>Use existing images from BioContainers, Quay.io</li>
+                        <li>Create custom Dockerfile if needed</li>
+                        <li><strong>Resources:</strong> <a href="https://docs.docker.com/" target="_blank">Docker Documentation</a></li>
+                    </ul>
+
+                    <h4>Singularity/Apptainer</h4>
+                    <ul>
+                        <li>Preferred on HPC systems (no root required)</li>
+                        <li>Can convert Docker images</li>
+                        <li><strong>Resources:</strong> <a href="https://apptainer.org/docs/" target="_blank">Apptainer Documentation</a></li>
+                    </ul>
+
+                    <h4>Conda Environments</h4>
+                    <ul>
+                        <li>Lightweight alternative</li>
+                        <li>Good for tool version management</li>
+                        <li>Less reproducible than containers (dependency conflicts possible)</li>
                     </ul>
                 </div>
             </div>
@@ -237,435 +230,181 @@ mut_matrix_matched <- mut_matrix_matched[, order(colnames(mut_matrix_matched))]<
             <div class="content-section">
                 <h2>📋 Required Deliverables</h2>
                 
-                <h3>1. Data Integration (25 points)</h3>
-                
-                <h4>A. Genomic Features Engineering</h4>
-                <pre><code>library(maftools)
+                <div class="warning-box">
+                    <h3>Your pipeline must include ALL of these:</h3>
+                </div>
 
-# Load and analyze mutations
-maf <- read.maf("mutations.maf")
-
-# Mutation burden per sample
-tmb <- tmb(maf)
-
-# Driver gene mutations
-driver_genes <- c("TP53", "PIK3CA", "KRAS", "PTEN", "EGFR", 
-                  "ERBB2", "APC", "BRCA1", "BRCA2")
-
-# Create binary feature matrix
-mut_features <- createOncoMatrix(maf, genes = driver_genes)
-
-# Oncogenic pathway analysis
-oncoplot(maf, top = 20)
-
-# Mutational signatures (optional but impressive)
-library(deconstructSigs)
-sigs <- mut.to.sigs.input(maf, sample.id = "Tumor_Sample_Barcode")</code></pre>
-
-                <h4>B. Transcriptomic Features Engineering</h4>
-                <pre><code>library(DESeq2)
-
-# Normalize expression data
-dds <- DESeqDataSetFromMatrix(
-    countData = expression,
-    colData = clinical,
-    design = ~ 1
-)
-vsd <- vst(dds, blind = TRUE)
-
-# Select highly variable genes
-var_genes <- apply(assay(vsd), 1, var)
-top_var <- names(sort(var_genes, decreasing = TRUE)[1:1000])
-
-# Optional: Reduce dimensions with PCA
-pca_expr <- prcomp(t(assay(vsd)[top_var, ]), scale. = TRUE)
-expr_features <- pca_expr$x[, 1:10]  # First 10 PCs</code></pre>
-
-                <h4>C. Integration Strategy</h4>
-                <p>Choose and implement an integration method:</p>
+                <h3>1. Functional Pipeline (40 points)</h3>
                 <ul>
-                    <li><strong>Concatenation:</strong> Combine scaled feature matrices</li>
-                    <li><strong>Multi-omics Factor Analysis (MOFA):</strong> Joint dimensionality reduction</li>
-                    <li><strong>iClusterPlus:</strong> Integrative clustering for cancer genomics</li>
-                    <li><strong>Similarity Network Fusion (SNF):</strong> Network-based integration</li>
+                    <li><strong>Runs successfully</strong> from start to finish on test data</li>
+                    <li><strong>Modular design</strong> with separate components/processes</li>
+                    <li><strong>Proper error handling</strong> with informative messages</li>
+                    <li><strong>Configurable parameters</strong> (not hardcoded paths)</li>
+                    <li><strong>Generates expected outputs</strong> in organized directory structure</li>
                 </ul>
 
-                <pre><code># Example: Simple concatenation
-# Scale both matrices
-mut_scaled <- scale(t(mut_matrix))
-expr_scaled <- scale(t(expr_matrix[top_var, ]))
-
-# Combine (ensure same sample order!)
-integrated_features <- cbind(mut_scaled, expr_scaled)
-
-# Alternative: iClusterPlus for proper integration
-library(iClusterPlus)
-data_list <- list(
-    mutations = t(mut_matrix),
-    expression = t(expr_matrix[top_var, ])
-)
-
-# Run integrative clustering
-icluster_result <- iClusterPlus(
-    dt1 = data_list$mutations,
-    dt2 = data_list$expression,
-    type = c("binomial", "gaussian"),
-    K = 3,  # Number of clusters
-    lambda = c(0.1, 0.1)
-)</code></pre>
-
-                <h3>2. Subtype Discovery (30 points)</h3>
-                
-                <h4>Clustering Analysis</h4>
-                <pre><code>library(ConsensusClusterPlus)
-
-# Consensus clustering for robust subtype identification
-cc <- ConsensusClusterPlus(
-    t(integrated_features),
-    maxK = 6,
-    reps = 1000,
-    pItem = 0.8,
-    pFeature = 1,
-    clusterAlg = "hc",
-    distance = "euclidean",
-    title = "cancer_subtypes"
-)
-
-# Determine optimal number of clusters
-# Look at consensus matrices and silhouette scores
-
-# Extract cluster assignments
-optimal_k <- 3  # Based on consensus analysis
-clusters <- cc[[optimal_k]]$consensusClass</code></pre>
-
-                <h4>Subtype Characterization</h4>
-                <p>For each identified subtype, characterize:</p>
-                
-                <h5>Mutational Profile</h5>
-                <pre><code># Which genes are frequently mutated in each subtype?
-for(cluster_id in unique(clusters)) {
-    cluster_samples <- names(clusters)[clusters == cluster_id]
-    cluster_maf <- subsetMaf(maf, tsb = cluster_samples)
-    
-    # Plot top mutated genes
-    plotmafSummary(cluster_maf, rmOutlier = TRUE, 
-                   addStat = 'median', dashboard = TRUE)
-}</code></pre>
-
-                <h5>Expression Signatures</h5>
-                <pre><code># Find genes that define each subtype
-library(limma)
-
-# Differential expression between subtypes
-design <- model.matrix(~ 0 + clusters)
-fit <- lmFit(expr_matrix, design)
-contrast_matrix <- makeContrasts(
-    cluster1vs2 = clusters1 - clusters2,
-    cluster1vs3 = clusters1 - clusters3,
-    levels = design
-)
-fit2 <- contrasts.fit(fit, contrast_matrix)
-fit2 <- eBayes(fit2)
-
-# Top genes per subtype
-top_genes_c1 <- topTable(fit2, coef = 1, n = 50)</code></pre>
-
-                <h5>Pathway Enrichment</h5>
-                <pre><code>library(clusterProfiler)
-library(org.Hs.eg.db)
-
-# For each subtype's signature genes
-up_genes_c1 <- rownames(top_genes_c1[top_genes_c1$logFC > 1, ])
-
-# GO enrichment
-go_result <- enrichGO(
-    gene = up_genes_c1,
-    OrgDb = org.Hs.eg.db,
-    keyType = "SYMBOL",
-    ont = "BP",
-    pvalueCutoff = 0.05
-)
-
-# KEGG pathways
-kegg_result <- enrichKEGG(
-    gene = bitr(up_genes_c1, "SYMBOL", "ENTREZID", org.Hs.eg.db)$ENTREZID,
-    organism = "hsa",
-    pvalueCutoff = 0.05
-)</code></pre>
-
-                <h3>3. Clinical Relevance (25 points)</h3>
-                
-                <h4>A. Treatment Response Prediction</h4>
-                <pre><code>library(DGIdb)
-
-# Identify druggable alterations in each subtype
-# Example: Subtype 1 enriched for ERBB2 amplification → Trastuzumab
-# Subtype 2 enriched for PIK3CA mutations → PI3K inhibitors
-
-# For key altered genes, find drugs
-druggable_genes <- c("ERBB2", "PIK3CA", "EGFR", "BRAF", "ALK")
-
-# Query drug-gene interactions (use DGIdb website or API)
-# http://dgidb.org/api
-
-# Create drug recommendation table per subtype
-drug_recommendations <- data.frame(
-    Subtype = character(),
-    Gene = character(),
-    Alteration = character(),
-    Drug = character(),
-    Evidence_Level = character()
-)</code></pre>
-
-                <h4>B. Comparison to Known Subtypes</h4>
-                <pre><code># For BRCA: Compare to PAM50 subtypes (LumA, LumB, Her2, Basal, Normal-like)
-# For LUAD: Compare to EGFR/KRAS/ALK subtypes
-# For COAD: Compare to CMS (Consensus Molecular Subtypes)
-
-# If using TCGA-BRCA, PAM50 subtypes are in clinical data
-# Calculate agreement with your subtypes
-library(mclust)
-ari <- adjustedRandIndex(clusters, clinical$PAM50_subtype)
-print(paste("ARI with PAM50:", ari))</code></pre>
-
-                <h4>C. Prognostic Analysis</h4>
-                <pre><code>library(survival)
-library(survminer)
-
-# Prepare survival data
-clinical$OS_years <- clinical$OS_days / 365.25
-clinical$subtype <- clusters[match(clinical$patient_id, names(clusters))]
-
-# Kaplan-Meier survival analysis
-fit <- survfit(Surv(OS_years, vital_status) ~ subtype, data = clinical)
-
-# Plot survival curves
-ggsurvplot(
-    fit,
-    data = clinical,
-    risk.table = TRUE,
-    pval = TRUE,
-    conf.int = TRUE,
-    xlab = "Time (years)",
-    ylab = "Overall Survival",
-    legend.title = "Subtype",
-    ggtheme = theme_minimal()
-)
-
-# Cox proportional hazards model
-cox_model <- coxph(Surv(OS_years, vital_status) ~ subtype + age + stage, 
-                   data = clinical)
-summary(cox_model)</code></pre>
-
-                <h3>4. Interactive Dashboard (20 points)</h3>
-                <p>Create a Shiny app or interactive HTML report with:</p>
+                <h3>2. Reproducibility (25 points)</h3>
                 <ul>
-                    <li>Subtype assignments for all patients</li>
-                    <li>Feature heatmaps (mutations + expression)</li>
-                    <li>Pathway enrichment plots per subtype</li>
-                    <li>Drug recommendation tables</li>
-                    <li>Survival curves by subtype</li>
-                    <li>Sample explorer (click patient to see their profile)</li>
+                    <li><strong>Containerized or conda environment</strong> with all dependencies</li>
+                    <li><strong>Version pinning</strong> for all tools and databases</li>
+                    <li><strong>Works on different systems</strong> (tested or documented compatibility)</li>
+                    <li><strong>Resumable</strong> (can restart from failure point)</li>
                 </ul>
 
-                <pre><code>library(shiny)
-library(ComplexHeatmap)
-library(plotly)
+                <h3>3. Documentation (25 points)</h3>
+                <ul>
+                    <li><strong>Comprehensive README</strong> with:
+                        <ul>
+                            <li>Installation instructions</li>
+                            <li>Quick start guide</li>
+                            <li>Usage examples</li>
+                            <li>Parameter descriptions</li>
+                            <li>Output file descriptions</li>
+                            <li>Troubleshooting section</li>
+                        </ul>
+                    </li>
+                    <li><strong>Code comments</strong> explaining complex logic</li>
+                    <li><strong>Example data</strong> or instructions to obtain test data</li>
+                </ul>
 
-ui <- fluidPage(
-    titlePanel("Cancer Multi-Omics Subtype Explorer"),
-    
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("subtype", "Select Subtype:",
-                       choices = unique(clusters)),
-            selectInput("view", "Select View:",
-                       choices = c("Mutations", "Expression", 
-                                 "Pathways", "Survival", "Drugs"))
-        ),
-        
-        mainPanel(
-            conditionalPanel(
-                condition = "input.view == 'Mutations'",
-                plotOutput("mutation_plot", height = "600px")
-            ),
-            conditionalPanel(
-                condition = "input.view == 'Expression'",
-                plotlyOutput("expression_heatmap")
-            ),
-            conditionalPanel(
-                condition = "input.view == 'Pathways'",
-                plotOutput("pathway_plot")
-            ),
-            conditionalPanel(
-                condition = "input.view == 'Survival'",
-                plotOutput("survival_plot")
-            ),
-            conditionalPanel(
-                condition = "input.view == 'Drugs'",
-                DT::dataTableOutput("drug_table")
-            )
-        )
-    )
-)
-
-server <- function(input, output, session) {
-    # Implement reactive plots based on subtype selection
-    # See full Shiny documentation for implementation
-}
-
-shinyApp(ui, server)</code></pre>
+                <h3>4. Testing (10 points)</h3>
+                <ul>
+                    <li><strong>Test dataset included</strong> or instructions to obtain one</li>
+                    <li><strong>Test passes successfully</strong> and completes in reasonable time</li>
+                    <li><strong>Output validation</strong> (at minimum, check files exist)</li>
+                </ul>
             </div>
 
             <div class="content-section">
-                <h2>🗄️ Databases & Resources</h2>
+                <h2>📚 Learning Resources</h2>
                 
-                <div class="info-box">
-                    <h3>Data Sources</h3>
+                <div class="success-box">
+                    <h3>Essential Reading</h3>
                     <ul>
-                        <li><strong>GDC Data Portal:</strong> <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></li>
-                        <li><strong>cBioPortal:</strong> <a href="https://www.cbioportal.org/" target="_blank">https://www.cbioportal.org/</a></li>
-                        <li><strong>UCSC Xena:</strong> <a href="https://xenabrowser.net/" target="_blank">https://xenabrowser.net/</a></li>
-                        <li><strong>ICGC Data Portal:</strong> <a href="https://dcc.icgc.org/" target="_blank">https://dcc.icgc.org/</a></li>
+                        <li><strong>nf-core guidelines:</strong> <a href="https://nf-co.re/docs/contributing/guidelines" target="_blank">Best practices for Nextflow</a></li>
+                        <li><strong>Snakemake tutorial:</strong> <a href="https://snakemake.readthedocs.io/en/stable/tutorial/tutorial.html" target="_blank">Official tutorial</a></li>
+                        <li><strong>Ten Simple Rules for Reproducible Computational Research:</strong> PLOS paper on best practices</li>
+                        <li><strong>Container best practices:</strong> <a href="https://docs.docker.com/develop/dev-best-practices/" target="_blank">Docker best practices</a></li>
                     </ul>
                 </div>
 
                 <div class="info-box">
-                    <h3>Clinical Annotation</h3>
+                    <h3>Example Pipelines to Study</h3>
+                    <p>Learn by examining existing production pipelines:</p>
+                    
+                    <h4>nf-core Pipelines</h4>
                     <ul>
-                        <li><strong>OncoKB:</strong> <a href="https://www.oncokb.org/" target="_blank">https://www.oncokb.org/</a> (Oncogenic alterations)</li>
-                        <li><strong>DGIdb:</strong> <a href="https://www.dgidb.org/" target="_blank">https://www.dgidb.org/</a> (Drug-gene interactions)</li>
-                        <li><strong>CIViC:</strong> <a href="https://civicdb.org/" target="_blank">https://civicdb.org/</a> (Clinical interpretations)</li>
-                        <li><strong>COSMIC:</strong> <a href="https://cancer.sanger.ac.uk/cosmic" target="_blank">https://cancer.sanger.ac.uk/cosmic</a></li>
+                        <li><strong>nf-core/rnaseq:</strong> Gold standard RNA-seq pipeline</li>
+                        <li><strong>nf-core/sarek:</strong> Variant calling pipeline</li>
+                        <li><strong>nf-core/chipseq:</strong> ChIP-seq analysis</li>
+                        <li><strong>nf-core/scrnaseq:</strong> Single-cell RNA-seq</li>
+                        <li><strong>Browse all:</strong> <a href="https://nf-co.re/pipelines" target="_blank">nf-co.re/pipelines</a></li>
+                    </ul>
+
+                    <h4>Snakemake Workflows</h4>
+                    <ul>
+                        <li><strong>Snakemake-workflows:</strong> <a href="https://github.com/snakemake-workflows" target="_blank">Community-curated workflows</a></li>
+                        <li><strong>Broad Institute pipelines:</strong> GATK best practices implementations</li>
                     </ul>
                 </div>
 
-                <div class="info-box">
-                    <h3>Pathway Databases</h3>
+                <div class="warning-box">
+                    <h3>⚠️ Important Notes</h3>
                     <ul>
-                        <li><strong>KEGG:</strong> <a href="https://www.genome.jp/kegg/" target="_blank">https://www.genome.jp/kegg/</a></li>
-                        <li><strong>Reactome:</strong> <a href="https://reactome.org/" target="_blank">https://reactome.org/</a></li>
-                        <li><strong>MSigDB:</strong> <a href="https://www.gsea-msigdb.org/" target="_blank">https://www.gsea-msigdb.org/</a></li>
+                        <li><strong>Don't reinvent the wheel:</strong> Use existing tools and containers when possible</li>
+                        <li><strong>Start simple:</strong> Get a basic version working before adding features</li>
+                        <li><strong>Test early and often:</strong> Use small test data to iterate quickly</li>
+                        <li><strong>Version control:</strong> Use Git from the start</li>
+                        <li><strong>Document as you go:</strong> Don't leave documentation for the end</li>
                     </ul>
                 </div>
-
-                <p>Full database list: <a href="../databases.html">Databases & Resources</a></p>
-            </div>
-
-            <div class="content-section">
-                <h2>🛠️ Required Tools</h2>
-                
-                <div class="info-box">
-                    <h3>R Packages</h3>
-                    <pre><code># Install core packages
-install.packages("BiocManager")
-
-BiocManager::install(c(
-    # Data access
-    "TCGAbiolinks", "UCSCXenaTools",
-    
-    # Mutation analysis
-    "maftools",
-    
-    # Expression analysis
-    "DESeq2", "limma",
-    
-    # Integration methods
-    "ConsensusClusterPlus", "iClusterPlus", "SNFtool",
-    
-    # Pathway analysis
-    "clusterProfiler", "org.Hs.eg.db", "ReactomePA",
-    
-    # Survival analysis
-    "survival", "survminer",
-    
-    # Visualization
-    "ComplexHeatmap", "pheatmap", "ggplot2",
-    
-    # Interactive apps
-    "shiny", "plotly", "DT"
-))
-
-# Optional: Machine learning
-install.packages(c("glmnet", "randomForest", "caret"))</code></pre>
-                </div>
-
-                <div class="info-box">
-                    <h3>Python Alternative</h3>
-                    <pre><code># If you prefer Python
-pip install pandas numpy scipy scikit-learn
-pip install matplotlib seaborn plotly
-pip install lifelines  # Survival analysis
-pip install statsmodels
-pip install dash  # Interactive dashboards</code></pre>
-                </div>
-            </div>
-
-            <div class="success-box">
-                <h3>💡 Analysis Strategy Tips</h3>
-                <ol>
-                    <li><strong>Start with data quality:</strong> Check sample overlap, missing data, outliers</li>
-                    <li><strong>Feature selection is critical:</strong> Use variable genes and driver mutations only</li>
-                    <li><strong>Validate cluster stability:</strong> Use consensus clustering with many iterations</li>
-                    <li><strong>Biological validation:</strong> Do subtypes match known biology?</li>
-                    <li><strong>Clinical relevance:</strong> Are subtypes prognostic? Predictive?</li>
-                    <li><strong>Compare to literature:</strong> How do your subtypes relate to published classifications?</li>
-                </ol>
             </div>
 
             <div class="content-section">
                 <h2>📊 Grading Rubric</h2>
                 <table>
                     <tr><th>Criteria</th><th>Points</th><th>What We're Looking For</th></tr>
-                    <tr><td>Data Integration</td><td>25</td><td>Proper matching, feature engineering, integration method</td></tr>
-                    <tr><td>Subtype Discovery</td><td>30</td><td>Robust clustering, clear characterization</td></tr>
-                    <tr><td>Clinical Relevance</td><td>25</td><td>Drug recommendations, survival analysis, validation</td></tr>
-                    <tr><td>Dashboard/Visualization</td><td>20</td><td>Interactive, comprehensive, user-friendly</td></tr>
-                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td><td>ML models, novel analyses, advanced methods</td></tr>
+                    <tr><td>Functional Pipeline</td><td>40</td><td>Works end-to-end, modular, configurable</td></tr>
+                    <tr><td>Reproducibility</td><td>25</td><td>Containerized, version-pinned, portable</td></tr>
+                    <tr><td>Documentation</td><td>25</td><td>Comprehensive README, clear examples</td></tr>
+                    <tr><td>Testing</td><td>10</td><td>Includes test data, validates outputs</td></tr>
+                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td><td>See bonus ideas below</td></tr>
                 </table>
             </div>
 
             <div class="content-section">
                 <h2>🎨 Creativity Bonus Ideas</h2>
                 <ul>
-                    <li>🌟 <strong>Machine learning classifier:</strong> Train model to predict subtypes from new samples</li>
-                    <li>🌟 <strong>Immune microenvironment:</strong> Integrate immune cell deconvolution (CIBERSORT)</li>
-                    <li>🌟 <strong>Synthetic lethality:</strong> Predict drug combinations based on genetic context</li>
-                    <li>🌟 <strong>Pathway crosstalk:</strong> Network analysis of pathway interactions</li>
-                    <li>🌟 <strong>Multi-omics factor analysis:</strong> Use MOFA/MOFA+ for sophisticated integration</li>
-                    <li>🌟 <strong>Drug repurposing:</strong> Connect expression signatures to L1000/LINCS data</li>
+                    <li>🌟 <strong>CI/CD integration:</strong> GitHub Actions to auto-test on every commit</li>
+                    <li>🌟 <strong>Cloud deployment:</strong> Configuration for AWS Batch, Google Cloud, or Azure</li>
+                    <li>🌟 <strong>Interactive report:</strong> Shiny app, HTML dashboard, or similar</li>
+                    <li>🌟 <strong>Resource optimization:</strong> Auto-scaling based on input size</li>
+                    <li>🌟 <strong>Comprehensive logging:</strong> Detailed execution logs and metrics</li>
+                    <li>🌟 <strong>Email/Slack notifications:</strong> Alert when pipeline completes or fails</li>
+                    <li>🌟 <strong>Benchmarking suite:</strong> Performance testing across different parameters</li>
+                    <li>🌟 <strong>Web interface:</strong> GUI for parameter input and job submission</li>
+                    <li>🌟 <strong>Automated quality checks:</strong> Flag suspicious samples or results</li>
+                    <li>🌟 <strong>Multi-platform support:</strong> Works on HPC, cloud, and local systems</li>
                 </ul>
             </div>
 
+            <div class="success-box">
+                <h3>💡 Pipeline Development Tips</h3>
+                <ol>
+                    <li><strong>Choose scope wisely:</strong> Better to have a polished simple pipeline than incomplete complex one</li>
+                    <li><strong>Use existing containers:</strong> BioContainers, Quay.io have most tools already containerized</li>
+                    <li><strong>Parameterize everything:</strong> Paths, thresholds, tool options should all be configurable</li>
+                    <li><strong>Organize outputs:</strong> Use subdirectories for different analysis stages</li>
+                    <li><strong>Handle failures gracefully:</strong> Provide clear error messages explaining what went wrong</li>
+                    <li><strong>Think about scalability:</strong> Will this work with 10 samples? 100? 1000?</li>
+                    <li><strong>Test on small data first:</strong> Use subsampled or toy datasets for development</li>
+                    <li><strong>Follow community standards:</strong> Look at how established pipelines structure their code</li>
+                </ol>
+            </div>
+
             <div class="content-section">
-                <h2>📁 Submission Requirements</h2>
+                <h2>📁 Suggested Repository Structure</h2>
+                <p>Organize your pipeline repository like this:</p>
+                <pre><code>pipeline-name/
+├── README.md                    # Main documentation
+├── nextflow.config              # (if using Nextflow)
+├── Snakefile                    # (if using Snakemake)
+├── main.nf                      # Main workflow script
+├── modules/                     # Individual process definitions
+├── workflows/                   # Sub-workflows
+├── conf/                        # Configuration files
+│   ├── base.config
+│   ├── resources.config
+│   └── test.config
+├── bin/                         # Custom scripts
+├── containers/                  # Container definitions
+│   ├── Dockerfile
+│   └── environment.yml
+├── test_data/                   # Small test dataset
+├── docs/                        # Additional documentation
+│   ├── usage.md
+│   ├── output.md
+│   └── troubleshooting.md
+├── .github/workflows/           # CI/CD (optional)
+│   └── test.yml
+├── examples/                    # Usage examples
+└── LICENSE                      # Open source license</code></pre>
+            </div>
+
+            <div class="content-section">
+                <h2>🎤 Presentation Format</h2>
+                <p><strong>Time limit:</strong> 5-7 minutes + Q&A</p>
                 
-                <h3>GitHub Repository Structure</h3>
-                <pre><code>challenge4-multiomics/
-├── README.md
-├── data/
-│   ├── dataset_information.md
-│   └── preprocessing_notes.md
-├── scripts/
-│   ├── 01_download_data.R
-│   ├── 02_feature_engineering.R
-│   ├── 03_integration.R
-│   ├── 04_clustering.R
-│   ├── 05_characterization.R
-│   └── 06_clinical_analysis.R
-├── results/
-│   ├── subtype_assignments.csv
-│   ├── mutation_profiles/
-│   ├── expression_signatures/
-│   ├── pathway_enrichment/
-│   └── figures/
-├── shiny_app/
-│   ├── app.R
-│   └── data/
-├── report/
-│   └── multi_omics_analysis.pdf
-└── presentation/
-    └── slides.pdf</code></pre>
+                <h3>What to Present:</h3>
+                <ol>
+                    <li><strong>Problem & Solution (1 min):</strong> What analysis problem does your pipeline solve?</li>
+                    <li><strong>Architecture (1-2 min):</strong> Workflow diagram showing pipeline steps</li>
+                    <li><strong>Live Demo (2-3 min):</strong> Show it running (or video if live risky)</li>
+                    <li><strong>Key Features (1 min):</strong> What makes your pipeline special?</li>
+                    <li><strong>Technical Details (1 min):</strong> Tools used, challenges overcome</li>
+                </ol>
+
+                <p><strong>Pro tip:</strong> Have a pre-run example ready in case live demo fails!</p>
             </div>
 
             <div style="text-align: center; margin: 3rem 0;">
