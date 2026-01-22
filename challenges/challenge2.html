@@ -59,37 +59,109 @@
             </div>
 
             <div class="content-section">
-                <h2>📥 Dataset Information</h2>
+                <h2>📥 Finding Your Dataset</h2>
                 
+                <div class="info-box">
+                    <h3>🎯 Your First Task: Dataset Selection</h3>
+                    <p>You'll need to find real human genomic variant data from public repositories. This challenge tests your ability to work with clinical-scale variant data.</p>
+                </div>
+
                 <div class="success-box">
-                    <h3>Using Public Data from ClinVar</h3>
-                    <p>We'll provide you with a <strong>simulated patient VCF file</strong> that contains:</p>
+                    <h3>Dataset Requirements</h3>
+                    <p>Find a dataset that meets these criteria:</p>
                     <ul>
-                        <li>~3 million real human variants from 1000 Genomes</li>
-                        <li>1 known pathogenic variant "spiked in" from ClinVar</li>
-                        <li>Benign and common population variants as noise</li>
+                        <li><strong>Data Type:</strong> Whole genome or whole exome sequencing variants (VCF format)</li>
+                        <li><strong>Organism:</strong> Human (Homo sapiens)</li>
+                        <li><strong>Reference Genome:</strong> GRCh37/hg19 or GRCh38/hg38</li>
+                        <li><strong>Sample Type:</strong> Individual or trio (patient + parents)</li>
+                        <li><strong>Preferred Source:</strong> 1000 Genomes Project, gnomAD, or individual case studies</li>
                     </ul>
                 </div>
 
-                <h3>Download Options</h3>
-                
-                <h4>Option 1: Use Our Pre-made VCF (Recommended)</h4>
-                <pre><code># Download from Google Drive
-wget "GDRIVE_LINK_HERE" -O patient_wgs.vcf.gz
-
-# Index the VCF
-tabix -p vcf patient_wgs.vcf.gz</code></pre>
-
-                <h4>Option 2: Create Your Own from 1000 Genomes</h4>
-                <pre><code># Download a 1000 Genomes sample
+                <div class="warning-box">
+                    <h3>🔍 Where to Search for Variant Data</h3>
+                    
+                    <h4>Option 1: 1000 Genomes Project</h4>
+                    <p>High-quality population variant data: <a href="https://www.internationalgenome.org/data" target="_blank">https://www.internationalgenome.org/data</a></p>
+                    
+                    <pre><code># Download a sample from 1000 Genomes (GRCh38)
 wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_phased/CCDG_14151_B01_GRM_WGS_2020-08-05_chr20.filtered.shapeit2-duohmm-phased.vcf.gz
 
-# Subset to coding regions (if needed)
-bcftools view -r 20:1000000-2000000 input.vcf.gz -O z -o subset.vcf.gz</code></pre>
+# Index the VCF
+tabix -p vcf CCDG_14151_B01_GRM_WGS_2020-08-05_chr20.filtered.shapeit2-duohmm-phased.vcf.gz
 
-                <h4>Reference Genome</h4>
-                <pre><code># Download GRCh38/hg38
-wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz</code></pre>
+# For multiple chromosomes or full genome, download additional files from:
+# ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/</code></pre>
+
+                    <h4>Option 2: gnomAD</h4>
+                    <p>Large-scale population database: <a href="https://gnomad.broadinstitute.org/downloads" target="_blank">https://gnomad.broadinstitute.org/downloads</a></p>
+                    
+                    <h4>Option 3: NCBI dbGaP (Requires Access Request)</h4>
+                    <p>Clinical datasets with phenotype data: <a href="https://www.ncbi.nlm.nih.gov/gap/" target="_blank">https://www.ncbi.nlm.nih.gov/gap/</a></p>
+                    <p><strong>Note:</strong> Some datasets require data use agreements</p>
+
+                    <h4>Creating a Challenge Dataset</h4>
+                    <p>Since this is a clinical scenario, you have two options:</p>
+                    <ul>
+                        <li><strong>Option A:</strong> Use a 1000 Genomes sample and "spike in" a known pathogenic variant from ClinVar</li>
+                        <li><strong>Option B:</strong> Search for published case studies with available VCF data</li>
+                    </ul>
+
+                    <pre><code># Option A: Spike in a pathogenic variant
+# 1. Download base VCF from 1000 Genomes
+# 2. Select a pathogenic variant from ClinVar relevant to phenotypes
+# 3. Add the variant to your VCF using bcftools
+
+# Search ClinVar for pathogenic variants
+# https://www.ncbi.nlm.nih.gov/clinvar/
+# Filter by: Pathogenic, Germline, conditions matching your phenotypes
+
+# Example: Adding a variant to VCF
+bcftools view base_sample.vcf.gz | \
+  awk 'BEGIN{OFS="\t"} 
+       {if(/^#/) print; 
+        else if(NR==1000) print "chr15\t48937205\t.\tG\tA\t999\tPASS\tAF=0.5"}' | \
+  bgzip > patient_wgs.vcf.gz
+tabix -p vcf patient_wgs.vcf.gz</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>⚡ Making Your Challenge Realistic</h3>
+                    <p>For the clinical scenario provided (seizures, intellectual disability, developmental delay):</p>
+                    <ul>
+                        <li><strong>Search ClinVar for:</strong> SCN1A, MECP2, CDKL5, STXBP1 (seizure-related genes)</li>
+                        <li><strong>Look for:</strong> Pathogenic variants associated with epileptic encephalopathies</li>
+                        <li><strong>Consider:</strong> Dravet syndrome, Rett syndrome, or other neurodevelopmental disorders</li>
+                        <li><strong>Variant types:</strong> Missense, nonsense, frameshift, or splice site variants</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <h3>📁 Reference Genome</h3>
+                    <p>Download the human reference genome matching your VCF version:</p>
+                    
+                    <h4>For GRCh38/hg38:</h4>
+                    <pre><code>wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+
+gunzip GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz</code></pre>
+
+                    <h4>For GRCh37/hg19:</h4>
+                    <pre><code>wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.13_GRCh37/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.13_GRCh37_no_alt_analysis_set.fna.gz
+
+gunzip GCA_000001405.13_GRCh37_no_alt_analysis_set.fna.gz</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>📝 Document Your Dataset</h3>
+                    <p>In your final report, include:</p>
+                    <ul>
+                        <li><strong>Data source:</strong> Where did you get the VCF? (1000 Genomes ID, gnomAD, etc.)</li>
+                        <li><strong>Reference genome version:</strong> GRCh37 or GRCh38?</li>
+                        <li><strong>Pathogenic variant(s) added:</strong> If you spiked in variants, document which ones and why</li>
+                        <li><strong>Total variant count:</strong> How many variants in your starting VCF?</li>
+                        <li><strong>Chromosomes included:</strong> Whole genome or specific chromosomes?</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="content-section">
@@ -238,7 +310,7 @@ conda install -c bioconda annovar
 conda install -c bioconda ensembl-vep
 
 # VCF manipulation
-conda install -c bioconda bcftools vcftools
+conda install -c bioconda bcftools vcftools tabix
 
 # Genome browser
 conda install -c bioconda igv
@@ -284,11 +356,13 @@ conda install pandas pysam</code></pre>
             </div>
 
             <div class="content-section">
-                <h2>📝 Submission</h2>
+                <h2>📁 Submission Requirements</h2>
+                
+                <h3>GitHub Repository Structure</h3>
                 <pre><code>challenge2-variant-hunter/
 ├── README.md
 ├── data/
-│   └── download_instructions.md
+│   └── dataset_information.md
 ├── scripts/
 │   ├── 01_annotate_variants.sh
 │   ├── 02_filter_variants.py
@@ -303,20 +377,6 @@ conda install pandas pysam</code></pre>
     └── slides.pdf</code></pre>
             </div>
 
-            <div class="warning-box">
-                <h3>⚠️ Mandatory README Badge</h3>
-                <pre><code># 🧬 GBBA BioHack 2026 Submission
-
-**Team Name:** [Your Team]
-**Challenge:** Challenge 2 - Variant Hunter
-
-📢 **Follow us:**
-- Instagram: [@gbba_northeastern](https://instagram.com/gbba_northeastern)
-- LinkedIn: [GBBA Northeastern](https://linkedin.com/company/gbba-northeastern)
-
-> ⚠️ Mandatory for evaluation</code></pre>
-            </div>
-
             <div style="text-align: center; margin: 3rem 0;">
                 <a href="../databases.html" class="btn btn-secondary">Database Resources</a>
                 <a href="../index.html#challenges" class="btn btn-primary">Back to Challenges</a>
@@ -326,7 +386,7 @@ conda install pandas pysam</code></pre>
 
     <footer>
         <div class="container">
-            <p>&copy; 2026 GBBA - Northeastern University</p>
+            <p>&copy; 2026 Graduate Biotechnology Business Association (GBBA) - Northeastern University</p>
         </div>
     </footer>
 </body>
