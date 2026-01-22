@@ -42,7 +42,7 @@ All submissions must:
 
 ---
 
-**Organized by:** Graduate Biotechnology Business Association (GBBA), Northeastern University  
+**Organized by:** Graduate Biotechnology Bioinformatics Association (GBBA), Northeastern University  
 **Website maintained by:** Shogan
 
 ⭐ Star this repository to stay updated!# GBBABioHack2026
