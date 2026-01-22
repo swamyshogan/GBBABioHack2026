@@ -16,7 +16,7 @@
                 </div>
                 <div class="event-details">
                     <h3>January 22-23, 2026</h3>
-                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back</a></p>
+                    <p><a href="../index.html" style="color: #764ba2; text-decoration: none;">← Back to Home</a></p>
                 </div>
             </div>
         </div>
@@ -27,9 +27,9 @@
             <span class="difficulty advanced">🔴 Advanced</span>
             <h1>🔬 Challenge 4: Multi-Omics Integration</h1>
             <div class="challenge-meta">
-                <div class="meta-item"><span>⏱️ 7-8 hours</span></div>
-                <div class="meta-item"><span>👥 3-5 people</span></div>
-                <div class="meta-item"><span>🏆 100 points</span></div>
+                <div class="meta-item"><span>⏱️ Time: 7-8 hours</span></div>
+                <div class="meta-item"><span>👥 Team: 3-5 people</span></div>
+                <div class="meta-item"><span>🏆 Points: 100</span></div>
             </div>
         </div>
     </section>
@@ -52,15 +52,45 @@
             </div>
 
             <div class="content-section">
-                <h2>📥 Dataset - TCGA Public Data</h2>
+                <h2>📥 Finding Your Multi-Omics Dataset</h2>
                 
+                <div class="info-box">
+                    <h3>🎯 Your First Task: Multi-Omics Data Acquisition</h3>
+                    <p>You'll access multiple data types (genomics + transcriptomics) from the same patient cohort. This tests your ability to work with integrated cancer genomics data at scale.</p>
+                </div>
+
                 <div class="success-box">
-                    <h3>Download from TCGA via GDC Portal</h3>
+                    <h3>Dataset Requirements</h3>
+                    <p>Find a dataset that meets these criteria:</p>
+                    <ul>
+                        <li><strong>Data Types:</strong> At least 2 omics layers (mutations + gene expression required)</li>
+                        <li><strong>Source:</strong> TCGA (preferred) or other cancer genomics projects</li>
+                        <li><strong>Cancer Type:</strong> Any solid tumor (breast, lung, colorectal, etc.)</li>
+                        <li><strong>Sample Size:</strong> 50-200 patients (more manageable for hackathon)</li>
+                        <li><strong>Clinical Data:</strong> Survival, stage, or treatment information available</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🔍 Where to Access Multi-Omics Data</h3>
+                    
+                    <h4>Option 1: TCGA via GDC Data Portal (Recommended)</h4>
+                    <p>The Cancer Genome Atlas: <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></p>
+                    
+                    <p><strong>Recommended cancer types for this challenge:</strong></p>
+                    <ul>
+                        <li><strong>TCGA-BRCA</strong> - Breast Invasive Carcinoma (~1000 samples, well-studied)</li>
+                        <li><strong>TCGA-LUAD</strong> - Lung Adenocarcinoma (~500 samples)</li>
+                        <li><strong>TCGA-COAD</strong> - Colon Adenocarcinoma (~400 samples)</li>
+                        <li><strong>TCGA-OV</strong> - Ovarian Serous Cystadenocarcinoma (~400 samples)</li>
+                    </ul>
+
                     <pre><code>library(TCGAbiolinks)
+library(SummarizedExperiment)
 
 # Download mutation data
 query_mut <- GDCquery(
-    project = "TCGA-BRCA",
+    project = "TCGA-BRCA",  # Change to your cancer type
     data.category = "Simple Nucleotide Variation",
     data.type = "Masked Somatic Mutation",
     access = "open"
@@ -68,33 +98,140 @@ query_mut <- GDCquery(
 GDCdownload(query_mut)
 mutations <- GDCprepare(query_mut)
 
-# Download expression data
+# Download gene expression data
 query_exp <- GDCquery(
     project = "TCGA-BRCA",
     data.category = "Transcriptome Profiling",
-    data.type = "Gene Expression Quantification"
+    data.type = "Gene Expression Quantification",
+    workflow.type = "STAR - Counts"
 )
 GDCdownload(query_exp)
-expression <- GDCprepare(query_exp)</code></pre>
+expression <- GDCprepare(query_exp)
+
+# Extract count matrix
+expr_matrix <- assay(expression)
+
+# Get clinical data
+clinical <- GDCquery_clinic(project = "TCGA-BRCA", type = "clinical")</code></pre>
+
+                    <h4>Option 2: cBioPortal (User-Friendly Interface)</h4>
+                    <p>Pre-processed, harmonized data: <a href="https://www.cbioportal.org/" target="_blank">https://www.cbioportal.org/</a></p>
+                    
+                    <p><strong>Steps to download:</strong></p>
+                    <ol>
+                        <li>Go to cBioPortal.org</li>
+                        <li>Select a study (e.g., "Breast Invasive Carcinoma (TCGA, PanCancer Atlas)")</li>
+                        <li>Click "Explore Selected Studies"</li>
+                        <li>Download data:
+                            <ul>
+                                <li>Mutations: Go to "Mutations" tab → "Download" → MAF format</li>
+                                <li>Expression: Go to "Download" → "mRNA Expression (RNA Seq V2 RSEM)"</li>
+                                <li>Clinical: Go to "Download" → "Clinical Data"</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h4>Option 3: Xena Browser</h4>
+                    <p>UCSC Xena for TCGA data: <a href="https://xenabrowser.net/" target="_blank">https://xenabrowser.net/</a></p>
+                    
+                    <pre><code># Download via Xena Browser interface or use R package
+# install.packages("UCSCXenaTools")
+library(UCSCXenaTools)
+
+# Find datasets
+datasets <- XenaData %>% 
+    filter(XenaHostNames == "tcgaHub") %>%
+    filter(XenaCohorts == "TCGA Breast Cancer (BRCA)")
+
+# Download mutation and expression data
+# Follow package documentation for specific queries</code></pre>
                 </div>
 
                 <div class="info-box">
-                    <h3>Alternative: cBioPortal</h3>
-                    <p>Download pre-processed data from cBioPortal:</p>
+                    <h3>⚡ Data Preparation Strategy</h3>
+                    
+                    <h4>1. Mutation Data Preparation</h4>
+                    <pre><code>library(maftools)
+
+# If you downloaded MAF from cBioPortal or TCGA
+maf <- read.maf("mutations.maf")
+
+# Key features to extract:
+# - Mutation burden per sample
+# - Driver gene mutations (TP53, PIK3CA, KRAS, etc.)
+# - Mutation types (missense, nonsense, frameshift)
+# - Oncogenic pathway alterations
+
+# Create binary mutation matrix (samples × genes)
+# 1 = mutated, 0 = wild-type
+oncomat <- createOncoMatrix(maf)
+mut_matrix <- oncomat$oncoMatrix</code></pre>
+
+                    <h4>2. Expression Data Preparation</h4>
+                    <pre><code>library(DESeq2)
+
+# If you have raw counts from TCGA
+# Normalize and transform
+dds <- DESeqDataSetFromMatrix(
+    countData = expr_matrix,
+    colData = clinical_subset,
+    design = ~ 1  # No design for unsupervised analysis
+)
+
+# Variance stabilizing transformation
+vsd <- vst(dds, blind = TRUE)
+expr_normalized <- assay(vsd)
+
+# Select most variable genes (reduces dimensionality)
+gene_vars <- apply(expr_normalized, 1, var)
+top_var_genes <- names(sort(gene_vars, decreasing = TRUE)[1:1000])
+expr_filtered <- expr_normalized[top_var_genes, ]</code></pre>
+
+                    <h4>3. Sample Matching</h4>
+                    <pre><code># CRITICAL: Match samples between datasets
+# TCGA barcodes: TCGA-XX-XXXX-01A-11R-XXXX-XX
+# First 12 characters identify patient
+
+# Extract patient IDs
+mut_patients <- substr(colnames(mut_matrix), 1, 12)
+expr_patients <- substr(colnames(expr_matrix), 1, 12)
+
+# Find common patients
+common_patients <- intersect(mut_patients, expr_patients)
+
+# Subset to common patients
+mut_matrix_matched <- mut_matrix[, mut_patients %in% common_patients]
+expr_matrix_matched <- expr_filtered[, expr_patients %in% common_patients]
+
+# Ensure same order
+expr_matrix_matched <- expr_matrix_matched[, order(colnames(expr_matrix_matched))]
+mut_matrix_matched <- mut_matrix_matched[, order(colnames(mut_matrix_matched))]</code></pre>
+                </div>
+
+                <div class="success-box">
+                    <h3>📝 Document Your Dataset</h3>
+                    <p>In your final report, include:</p>
                     <ul>
-                        <li>Go to <a href="https://www.cbioportal.org">cBioPortal.org</a></li>
-                        <li>Select: TCGA, Breast Invasive Carcinoma (TCGA, PanCancer Atlas)</li>
-                        <li>Download: Mutation data (MAF) + Expression data (RNA-seq)</li>
+                        <li><strong>TCGA Project ID:</strong> Which cancer type did you analyze?</li>
+                        <li><strong>Sample size:</strong> How many patients with both omics types?</li>
+                        <li><strong>Data types:</strong> Mutations (MAF), Expression (counts/TPM), Clinical variables</li>
+                        <li><strong>Download method:</strong> TCGAbiolinks? cBioPortal? Xena?</li>
+                        <li><strong>Data version/date:</strong> When was data accessed?</li>
+                        <li><strong>Key genes included:</strong> Which driver genes are in your mutation data?</li>
                     </ul>
                 </div>
 
-                <h3>We'll Provide (Preprocessed)</h3>
-                <ul>
-                    <li><strong>mutations.maf:</strong> Somatic mutations for 100 patients</li>
-                    <li><strong>expression.txt:</strong> RNA-seq counts/TPM</li>
-                    <li><strong>clinical.txt:</strong> Sample metadata</li>
-                </ul>
-                <p><strong>Download:</strong> [Google Drive link - Jan 21]</p>
+                <div class="warning-box">
+                    <h3>⚠️ Common Data Challenges</h3>
+                    <p>Watch out for these issues:</p>
+                    <ul>
+                        <li><strong>Sample ID mismatches:</strong> TCGA IDs have different suffixes for different data types</li>
+                        <li><strong>Missing data:</strong> Not all patients have all data types</li>
+                        <li><strong>Large file sizes:</strong> TCGA data can be several GB - consider subsetting</li>
+                        <li><strong>Reference genome versions:</strong> Ensure mutations and expression use same genome build</li>
+                        <li><strong>Batch effects:</strong> TCGA data from multiple sequencing centers</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="content-section">
@@ -102,25 +239,30 @@ expression <- GDCprepare(query_exp)</code></pre>
                 
                 <h3>1. Data Integration (25 points)</h3>
                 
-                <h4>A. Genomic Features</h4>
+                <h4>A. Genomic Features Engineering</h4>
                 <pre><code>library(maftools)
 
 # Load and analyze mutations
 maf <- read.maf("mutations.maf")
 
-# Extract key features:
-# - Mutation burden per sample
-# - Driver gene mutations (TP53, PIK3CA, etc.)
-# - Mutational signatures
-# - Pathway-level alterations
+# Mutation burden per sample
+tmb <- tmb(maf)
 
-# Create mutation matrix
-mut_matrix <- mutCountMatrix(maf)
+# Driver gene mutations
+driver_genes <- c("TP53", "PIK3CA", "KRAS", "PTEN", "EGFR", 
+                  "ERBB2", "APC", "BRCA1", "BRCA2")
+
+# Create binary feature matrix
+mut_features <- createOncoMatrix(maf, genes = driver_genes)
 
 # Oncogenic pathway analysis
-oncoplot(maf, genes = top_genes)</code></pre>
+oncoplot(maf, top = 20)
 
-                <h4>B. Transcriptomic Features</h4>
+# Mutational signatures (optional but impressive)
+library(deconstructSigs)
+sigs <- mut.to.sigs.input(maf, sample.id = "Tumor_Sample_Barcode")</code></pre>
+
+                <h4>B. Transcriptomic Features Engineering</h4>
                 <pre><code>library(DESeq2)
 
 # Normalize expression data
@@ -129,179 +271,414 @@ dds <- DESeqDataSetFromMatrix(
     colData = clinical,
     design = ~ 1
 )
-vsd <- vst(dds)
+vsd <- vst(dds, blind = TRUE)
 
-# Extract variable genes
+# Select highly variable genes
 var_genes <- apply(assay(vsd), 1, var)
-top_var <- names(sort(var_genes, decreasing=TRUE)[1:1000])</code></pre>
+top_var <- names(sort(var_genes, decreasing = TRUE)[1:1000])
+
+# Optional: Reduce dimensions with PCA
+pca_expr <- prcomp(t(assay(vsd)[top_var, ]), scale. = TRUE)
+expr_features <- pca_expr$x[, 1:10]  # First 10 PCs</code></pre>
 
                 <h4>C. Integration Strategy</h4>
-                <p>Choose an integration method:</p>
+                <p>Choose and implement an integration method:</p>
                 <ul>
-                    <li><strong>Simple concatenation:</strong> Combine features into single matrix</li>
-                    <li><strong>PCA-based:</strong> Reduce each omics, then integrate</li>
-                    <li><strong>NMF:</strong> Non-negative matrix factorization</li>
-                    <li><strong>iClusterPlus:</strong> Integrative clustering (R package)</li>
+                    <li><strong>Concatenation:</strong> Combine scaled feature matrices</li>
+                    <li><strong>Multi-omics Factor Analysis (MOFA):</strong> Joint dimensionality reduction</li>
+                    <li><strong>iClusterPlus:</strong> Integrative clustering for cancer genomics</li>
+                    <li><strong>Similarity Network Fusion (SNF):</strong> Network-based integration</li>
                 </ul>
+
+                <pre><code># Example: Simple concatenation
+# Scale both matrices
+mut_scaled <- scale(t(mut_matrix))
+expr_scaled <- scale(t(expr_matrix[top_var, ]))
+
+# Combine (ensure same sample order!)
+integrated_features <- cbind(mut_scaled, expr_scaled)
+
+# Alternative: iClusterPlus for proper integration
+library(iClusterPlus)
+data_list <- list(
+    mutations = t(mut_matrix),
+    expression = t(expr_matrix[top_var, ])
+)
+
+# Run integrative clustering
+icluster_result <- iClusterPlus(
+    dt1 = data_list$mutations,
+    dt2 = data_list$expression,
+    type = c("binomial", "gaussian"),
+    K = 3,  # Number of clusters
+    lambda = c(0.1, 0.1)
+)</code></pre>
 
                 <h3>2. Subtype Discovery (30 points)</h3>
                 
                 <h4>Clustering Analysis</h4>
-                <pre><code># Simple integration example
-library(ConsensusClusterPlus)
+                <pre><code>library(ConsensusClusterPlus)
 
-# Combine features
-combined_matrix <- rbind(
-    scale(mut_matrix),
-    scale(assay(vsd)[top_var,])
-)
-
-# Consensus clustering
+# Consensus clustering for robust subtype identification
 cc <- ConsensusClusterPlus(
-    combined_matrix,
+    t(integrated_features),
     maxK = 6,
     reps = 1000,
     pItem = 0.8,
     pFeature = 1,
     clusterAlg = "hc",
-    distance = "euclidean"
+    distance = "euclidean",
+    title = "cancer_subtypes"
 )
 
-# Determine optimal K
-# Look for clean clusters (high consensus)</code></pre>
+# Determine optimal number of clusters
+# Look at consensus matrices and silhouette scores
+
+# Extract cluster assignments
+optimal_k <- 3  # Based on consensus analysis
+clusters <- cc[[optimal_k]]$consensusClass</code></pre>
 
                 <h4>Subtype Characterization</h4>
-                <p>For each subtype, identify:</p>
-                <ul>
-                    <li>Recurrent mutations (which genes are mutated?)</li>
-                    <li>Expression signatures (which genes are up/down?)</li>
-                    <li>Pathway enrichment (which pathways define subtype?)</li>
-                    <li>Clinical associations (survival, grade, stage?)</li>
-                </ul>
+                <p>For each identified subtype, characterize:</p>
+                
+                <h5>Mutational Profile</h5>
+                <pre><code># Which genes are frequently mutated in each subtype?
+for(cluster_id in unique(clusters)) {
+    cluster_samples <- names(clusters)[clusters == cluster_id]
+    cluster_maf <- subsetMaf(maf, tsb = cluster_samples)
+    
+    # Plot top mutated genes
+    plotmafSummary(cluster_maf, rmOutlier = TRUE, 
+                   addStat = 'median', dashboard = TRUE)
+}</code></pre>
+
+                <h5>Expression Signatures</h5>
+                <pre><code># Find genes that define each subtype
+library(limma)
+
+# Differential expression between subtypes
+design <- model.matrix(~ 0 + clusters)
+fit <- lmFit(expr_matrix, design)
+contrast_matrix <- makeContrasts(
+    cluster1vs2 = clusters1 - clusters2,
+    cluster1vs3 = clusters1 - clusters3,
+    levels = design
+)
+fit2 <- contrasts.fit(fit, contrast_matrix)
+fit2 <- eBayes(fit2)
+
+# Top genes per subtype
+top_genes_c1 <- topTable(fit2, coef = 1, n = 50)</code></pre>
+
+                <h5>Pathway Enrichment</h5>
+                <pre><code>library(clusterProfiler)
+library(org.Hs.eg.db)
+
+# For each subtype's signature genes
+up_genes_c1 <- rownames(top_genes_c1[top_genes_c1$logFC > 1, ])
+
+# GO enrichment
+go_result <- enrichGO(
+    gene = up_genes_c1,
+    OrgDb = org.Hs.eg.db,
+    keyType = "SYMBOL",
+    ont = "BP",
+    pvalueCutoff = 0.05
+)
+
+# KEGG pathways
+kegg_result <- enrichKEGG(
+    gene = bitr(up_genes_c1, "SYMBOL", "ENTREZID", org.Hs.eg.db)$ENTREZID,
+    organism = "hsa",
+    pvalueCutoff = 0.05
+)</code></pre>
 
                 <h3>3. Clinical Relevance (25 points)</h3>
                 
                 <h4>A. Treatment Response Prediction</h4>
                 <pre><code>library(DGIdb)
 
-# For each subtype, find targetable alterations
-# Example: Subtype 1 has high HER2 expression → Trastuzumab
-# Subtype 2 has PIK3CA mutations → PI3K inhibitors
+# Identify druggable alterations in each subtype
+# Example: Subtype 1 enriched for ERBB2 amplification → Trastuzumab
+# Subtype 2 enriched for PIK3CA mutations → PI3K inhibitors
 
-# Query drug-gene interactions
-druggable_genes <- c("ERBB2", "PIK3CA", "EGFR")
-# Use DGIdb website or API to find drugs</code></pre>
+# For key altered genes, find drugs
+druggable_genes <- c("ERBB2", "PIK3CA", "EGFR", "BRAF", "ALK")
+
+# Query drug-gene interactions (use DGIdb website or API)
+# http://dgidb.org/api
+
+# Create drug recommendation table per subtype
+drug_recommendations <- data.frame(
+    Subtype = character(),
+    Gene = character(),
+    Alteration = character(),
+    Drug = character(),
+    Evidence_Level = character()
+)</code></pre>
 
                 <h4>B. Comparison to Known Subtypes</h4>
-                <p>For breast cancer, compare to PAM50 subtypes (Luminal A/B, HER2+, Basal)</p>
-                <pre><code># If using TCGA-BRCA, PAM50 calls are available
-# Compare your subtypes to published classifications</code></pre>
+                <pre><code># For BRCA: Compare to PAM50 subtypes (LumA, LumB, Her2, Basal, Normal-like)
+# For LUAD: Compare to EGFR/KRAS/ALK subtypes
+# For COAD: Compare to CMS (Consensus Molecular Subtypes)
+
+# If using TCGA-BRCA, PAM50 subtypes are in clinical data
+# Calculate agreement with your subtypes
+library(mclust)
+ari <- adjustedRandIndex(clusters, clinical$PAM50_subtype)
+print(paste("ARI with PAM50:", ari))</code></pre>
 
                 <h4>C. Prognostic Analysis</h4>
                 <pre><code>library(survival)
 library(survminer)
 
-# Survival analysis by subtype
-fit <- survfit(Surv(time, event) ~ subtype, data=clinical)
-ggsurvplot(fit, risk.table=TRUE, pval=TRUE)</code></pre>
+# Prepare survival data
+clinical$OS_years <- clinical$OS_days / 365.25
+clinical$subtype <- clusters[match(clinical$patient_id, names(clusters))]
+
+# Kaplan-Meier survival analysis
+fit <- survfit(Surv(OS_years, vital_status) ~ subtype, data = clinical)
+
+# Plot survival curves
+ggsurvplot(
+    fit,
+    data = clinical,
+    risk.table = TRUE,
+    pval = TRUE,
+    conf.int = TRUE,
+    xlab = "Time (years)",
+    ylab = "Overall Survival",
+    legend.title = "Subtype",
+    ggtheme = theme_minimal()
+)
+
+# Cox proportional hazards model
+cox_model <- coxph(Surv(OS_years, vital_status) ~ subtype + age + stage, 
+                   data = clinical)
+summary(cox_model)</code></pre>
 
                 <h3>4. Interactive Dashboard (20 points)</h3>
                 <p>Create a Shiny app or interactive HTML report with:</p>
                 <ul>
                     <li>Subtype assignments for all patients</li>
                     <li>Feature heatmaps (mutations + expression)</li>
-                    <li>Pathway enrichment plots</li>
+                    <li>Pathway enrichment plots per subtype</li>
                     <li>Drug recommendation tables</li>
                     <li>Survival curves by subtype</li>
+                    <li>Sample explorer (click patient to see their profile)</li>
                 </ul>
 
                 <pre><code>library(shiny)
+library(ComplexHeatmap)
+library(plotly)
 
 ui <- fluidPage(
-    titlePanel("Cancer Subtype Explorer"),
+    titlePanel("Cancer Multi-Omics Subtype Explorer"),
+    
     sidebarLayout(
         sidebarPanel(
             selectInput("subtype", "Select Subtype:",
-                       choices = 1:4)
+                       choices = unique(clusters)),
+            selectInput("view", "Select View:",
+                       choices = c("Mutations", "Expression", 
+                                 "Pathways", "Survival", "Drugs"))
         ),
+        
         mainPanel(
-            plotOutput("heatmap"),
-            plotOutput("pathways"),
-            tableOutput("drugs")
+            conditionalPanel(
+                condition = "input.view == 'Mutations'",
+                plotOutput("mutation_plot", height = "600px")
+            ),
+            conditionalPanel(
+                condition = "input.view == 'Expression'",
+                plotlyOutput("expression_heatmap")
+            ),
+            conditionalPanel(
+                condition = "input.view == 'Pathways'",
+                plotOutput("pathway_plot")
+            ),
+            conditionalPanel(
+                condition = "input.view == 'Survival'",
+                plotOutput("survival_plot")
+            ),
+            conditionalPanel(
+                condition = "input.view == 'Drugs'",
+                DT::dataTableOutput("drug_table")
+            )
         )
     )
 )
 
-server <- function(input, output) {
-    # Plot subtype-specific features
-}</code></pre>
+server <- function(input, output, session) {
+    # Implement reactive plots based on subtype selection
+    # See full Shiny documentation for implementation
+}
+
+shinyApp(ui, server)</code></pre>
             </div>
 
             <div class="content-section">
                 <h2>🗄️ Databases & Resources</h2>
-                <ul>
-                    <li><strong>TCGA:</strong> <a href="https://portal.gdc.cancer.gov/">GDC Data Portal</a></li>
-                    <li><strong>cBioPortal:</strong> <a href="https://www.cbioportal.org/">cBioPortal</a></li>
-                    <li><strong>DGIdb:</strong> <a href="https://www.dgidb.org/">Drug-Gene Interactions</a></li>
-                    <li><strong>OncoKB:</strong> <a href="https://www.oncokb.org/">Oncogenic Alterations</a></li>
-                    <li><strong>KEGG:</strong> Pathway databases</li>
-                </ul>
-                <p>Full list: <a href="../databases.html">Database Resources</a></p>
+                
+                <div class="info-box">
+                    <h3>Data Sources</h3>
+                    <ul>
+                        <li><strong>GDC Data Portal:</strong> <a href="https://portal.gdc.cancer.gov/" target="_blank">https://portal.gdc.cancer.gov/</a></li>
+                        <li><strong>cBioPortal:</strong> <a href="https://www.cbioportal.org/" target="_blank">https://www.cbioportal.org/</a></li>
+                        <li><strong>UCSC Xena:</strong> <a href="https://xenabrowser.net/" target="_blank">https://xenabrowser.net/</a></li>
+                        <li><strong>ICGC Data Portal:</strong> <a href="https://dcc.icgc.org/" target="_blank">https://dcc.icgc.org/</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Clinical Annotation</h3>
+                    <ul>
+                        <li><strong>OncoKB:</strong> <a href="https://www.oncokb.org/" target="_blank">https://www.oncokb.org/</a> (Oncogenic alterations)</li>
+                        <li><strong>DGIdb:</strong> <a href="https://www.dgidb.org/" target="_blank">https://www.dgidb.org/</a> (Drug-gene interactions)</li>
+                        <li><strong>CIViC:</strong> <a href="https://civicdb.org/" target="_blank">https://civicdb.org/</a> (Clinical interpretations)</li>
+                        <li><strong>COSMIC:</strong> <a href="https://cancer.sanger.ac.uk/cosmic" target="_blank">https://cancer.sanger.ac.uk/cosmic</a></li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h3>Pathway Databases</h3>
+                    <ul>
+                        <li><strong>KEGG:</strong> <a href="https://www.genome.jp/kegg/" target="_blank">https://www.genome.jp/kegg/</a></li>
+                        <li><strong>Reactome:</strong> <a href="https://reactome.org/" target="_blank">https://reactome.org/</a></li>
+                        <li><strong>MSigDB:</strong> <a href="https://www.gsea-msigdb.org/" target="_blank">https://www.gsea-msigdb.org/</a></li>
+                    </ul>
+                </div>
+
+                <p>Full database list: <a href="../databases.html">Databases & Resources</a></p>
             </div>
 
             <div class="content-section">
-                <h2>🛠️ Tools</h2>
-                <pre><code># R packages
+                <h2>🛠️ Required Tools</h2>
+                
+                <div class="info-box">
+                    <h3>R Packages</h3>
+                    <pre><code># Install core packages
+install.packages("BiocManager")
+
 BiocManager::install(c(
-    "TCGAbiolinks", "maftools", "ConsensusClusterPlus",
-    "iClusterPlus", "survival", "survminer",
-    "ComplexHeatmap", "shiny"
+    # Data access
+    "TCGAbiolinks", "UCSCXenaTools",
+    
+    # Mutation analysis
+    "maftools",
+    
+    # Expression analysis
+    "DESeq2", "limma",
+    
+    # Integration methods
+    "ConsensusClusterPlus", "iClusterPlus", "SNFtool",
+    
+    # Pathway analysis
+    "clusterProfiler", "org.Hs.eg.db", "ReactomePA",
+    
+    # Survival analysis
+    "survival", "survminer",
+    
+    # Visualization
+    "ComplexHeatmap", "pheatmap", "ggplot2",
+    
+    # Interactive apps
+    "shiny", "plotly", "DT"
 ))
 
-# Python alternative
-pip install scikit-learn pandas seaborn plotly</code></pre>
+# Optional: Machine learning
+install.packages(c("glmnet", "randomForest", "caret"))</code></pre>
+                </div>
+
+                <div class="info-box">
+                    <h3>Python Alternative</h3>
+                    <pre><code># If you prefer Python
+pip install pandas numpy scipy scikit-learn
+pip install matplotlib seaborn plotly
+pip install lifelines  # Survival analysis
+pip install statsmodels
+pip install dash  # Interactive dashboards</code></pre>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <h3>💡 Analysis Strategy Tips</h3>
+                <ol>
+                    <li><strong>Start with data quality:</strong> Check sample overlap, missing data, outliers</li>
+                    <li><strong>Feature selection is critical:</strong> Use variable genes and driver mutations only</li>
+                    <li><strong>Validate cluster stability:</strong> Use consensus clustering with many iterations</li>
+                    <li><strong>Biological validation:</strong> Do subtypes match known biology?</li>
+                    <li><strong>Clinical relevance:</strong> Are subtypes prognostic? Predictive?</li>
+                    <li><strong>Compare to literature:</strong> How do your subtypes relate to published classifications?</li>
+                </ol>
             </div>
 
             <div class="content-section">
-                <h2>📊 Grading</h2>
+                <h2>📊 Grading Rubric</h2>
                 <table>
-                    <tr><th>Criteria</th><th>Points</th></tr>
-                    <tr><td>Data Integration</td><td>25</td></tr>
-                    <tr><td>Subtype Discovery</td><td>30</td></tr>
-                    <tr><td>Clinical Relevance</td><td>25</td></tr>
-                    <tr><td>Dashboard/Visualization</td><td>20</td></tr>
-                    <tr><td><strong>Bonus</strong></td><td><strong>+10</strong></td></tr>
+                    <tr><th>Criteria</th><th>Points</th><th>What We're Looking For</th></tr>
+                    <tr><td>Data Integration</td><td>25</td><td>Proper matching, feature engineering, integration method</td></tr>
+                    <tr><td>Subtype Discovery</td><td>30</td><td>Robust clustering, clear characterization</td></tr>
+                    <tr><td>Clinical Relevance</td><td>25</td><td>Drug recommendations, survival analysis, validation</td></tr>
+                    <tr><td>Dashboard/Visualization</td><td>20</td><td>Interactive, comprehensive, user-friendly</td></tr>
+                    <tr><td><strong>Creativity Bonus</strong></td><td><strong>+10</strong></td><td>ML models, novel analyses, advanced methods</td></tr>
                 </table>
             </div>
 
             <div class="content-section">
-                <h2>🎨 Creativity Bonus</h2>
+                <h2>🎨 Creativity Bonus Ideas</h2>
                 <ul>
-                    <li>🌟 Machine learning for subtype prediction</li>
-                    <li>🌟 Immune microenvironment analysis</li>
-                    <li>🌟 Synthetic lethality predictions</li>
-                    <li>🌟 3D pathway visualizations</li>
+                    <li>🌟 <strong>Machine learning classifier:</strong> Train model to predict subtypes from new samples</li>
+                    <li>🌟 <strong>Immune microenvironment:</strong> Integrate immune cell deconvolution (CIBERSORT)</li>
+                    <li>🌟 <strong>Synthetic lethality:</strong> Predict drug combinations based on genetic context</li>
+                    <li>🌟 <strong>Pathway crosstalk:</strong> Network analysis of pathway interactions</li>
+                    <li>🌟 <strong>Multi-omics factor analysis:</strong> Use MOFA/MOFA+ for sophisticated integration</li>
+                    <li>🌟 <strong>Drug repurposing:</strong> Connect expression signatures to L1000/LINCS data</li>
                 </ul>
             </div>
 
-            <div class="warning-box">
-                <h3>⚠️ README Required</h3>
-                <pre><code># 🧬 GBBA BioHack 2026
-**Challenge 4 - Multi-Omics**
-
-📢 [@gbba_northeastern](https://instagram.com/gbba_northeastern)
-💼 [GBBA](https://linkedin.com/company/gbba-northeastern)</code></pre>
+            <div class="content-section">
+                <h2>📁 Submission Requirements</h2>
+                
+                <h3>GitHub Repository Structure</h3>
+                <pre><code>challenge4-multiomics/
+├── README.md
+├── data/
+│   ├── dataset_information.md
+│   └── preprocessing_notes.md
+├── scripts/
+│   ├── 01_download_data.R
+│   ├── 02_feature_engineering.R
+│   ├── 03_integration.R
+│   ├── 04_clustering.R
+│   ├── 05_characterization.R
+│   └── 06_clinical_analysis.R
+├── results/
+│   ├── subtype_assignments.csv
+│   ├── mutation_profiles/
+│   ├── expression_signatures/
+│   ├── pathway_enrichment/
+│   └── figures/
+├── shiny_app/
+│   ├── app.R
+│   └── data/
+├── report/
+│   └── multi_omics_analysis.pdf
+└── presentation/
+    └── slides.pdf</code></pre>
             </div>
 
             <div style="text-align: center; margin: 3rem 0;">
-                <a href="../databases.html" class="btn btn-secondary">Databases</a>
-                <a href="../index.html#challenges" class="btn btn-primary">Back</a>
+                <a href="../databases.html" class="btn btn-secondary">Database Resources</a>
+                <a href="../index.html#challenges" class="btn btn-primary">Back to Challenges</a>
             </div>
         </div>
     </section>
 
     <footer>
-        <div class="container"><p>&copy; 2026 GBBA - Northeastern University</p></div>
+        <div class="container">
+            <p>&copy; 2026 Graduate Biotechnology Business Association (GBBA) - Northeastern University</p>
+        </div>
     </footer>
 </body>
 </html>
